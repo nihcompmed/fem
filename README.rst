@@ -1,0 +1,48 @@
+Free Energy Minimization
+========================
+
+Quick Start
+-----------
+
+Interactive notebook
+~~~~~~~~~~~~~~~~~~~~
+
+Launch an interactive Jupyter notebook using Binder to run and edit the examples in the documentation:
+
+.. image:: https://mybinder.org/badge.svg
+   :target: https://mybinder.org/v2/gh/nihcompmed/fem/master?filepath=doc%2Fnotebooks
+
+Installation
+~~~~~~~~~~~~
+
+- To install ``fem`` on your computer using ``pip``, execute
+
+  .. code-block:: sh
+
+     pip install fem
+
+  Dependencies:
+
+  - Fortran compiler such as gfortran
+  - LAPACK development files
+  - OpenMP development files (for parallel computing support)
+
+
+- Load ``fem`` in your Python script:
+
+  .. code-block:: python
+
+     import fem
+
+
+Links
+-----
+
+Online documentation:
+    http://nihcompmed.github.io/fem
+
+Source code repository:
+    https://github.com/nihcompmed/fem
+
+Python package index:
+    https://pypi.python.org/pypi/fem

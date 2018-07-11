@@ -1,0 +1,10 @@
+install.sh
+uninstall.sh
+*.pyc
+*.ipynb_checkpoints
+*.so
+README
+/build/
+fem.egg-info/
+/data/msa/
+/data/vim2/

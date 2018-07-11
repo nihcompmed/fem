@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <title>fem.discrete.fit &mdash; fem  documentation</title>
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/spc-bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/spc-extend.css">
+    <link rel="stylesheet" href="../../../_static/scipy.css" type="text/css" >
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" >
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../../_static/js/copybutton.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" >
+    <link rel="search" title="Search" href="../../../search.html" >
+    <link rel="top" title="fem  documentation" href="../../../index.html" >
+    <link rel="up" title="Module code" href="../../index.html" > 
+  </head>
+  <body>
+
+  <div class="container">
+    <div class="header">
+    </div>
+  </div>
+
+
+    <div class="container">
+      <div class="main">
+        
+	<div class="row-fluid">
+	  <div class="span12">
+	    <div class="spc-navbar">
+              
+    <ul class="nav nav-pills pull-left">
+        <li class="active"><a href="https://www.niddk.nih.gov/research-funding/at-niddk/labs-branches/LBM">LBM</a></li>
+        <li class="active"><a href="https://pypi.python.org/pypi/fem">fem</a></li>
+	
+        <li class="active"><a href="../../../index.html">fem  documentation</a></li>
+	
+          <li class="active"><a href="../../index.html" accesskey="U">Module code</a></li> 
+    </ul>
+              
+              
+    <ul class="nav nav-pills pull-right">
+      <li class="active">
+        <a href="../../../genindex.html" title="General Index"
+           accesskey="I">index</a>
+      </li>
+      <li class="active">
+        <a href="../../../f-modindex.html" title="Fortran Module Index"
+           >fortran modules</a>
+      </li>
+      <li class="active">
+        <a href="../../../py-modindex.html" title="Python Module Index"
+           >modules</a>
+      </li>
+    </ul>
+              
+	    </div>
+	  </div>
+	</div>
+        
+
+	<div class="row-fluid">
+      <div class="spc-rightsidebar span3">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+          <div class="span9">
+            
+        <div class="bodywrapper">
+          <div class="body" id="spc-section-body">
+            
+  <h1>Source code for fem.discrete.fit</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;This module implements a class that can fit the Potts model to data and make predictions with the model. `FEM for discrete data`_</span>
+
+<span class="sd">.. _FEM for discrete data:</span>
+<span class="sd">   https://joepatmckenna.github.io/fem/discrete.html</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.sparse.linalg</span> <span class="k">import</span> <span class="n">svds</span>
+<span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="k">import</span> <span class="n">csc_matrix</span>
+<span class="kn">import</span> <span class="nn">combinatorics</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">fortran_module</span>
+
+
+<div class="viewcode-block" id="model"><a class="viewcode-back" href="../../../fem.discrete.html#fem.discrete.fit.model">[docs]</a><span class="k">class</span> <span class="nc">model</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This class implements a Potts model that can be fit to data and used to make predictions.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        degs (list): A list of model degrees</span>
+<span class="sd">        n_x (int): The number of input variables</span>
+<span class="sd">        n_y (int): The number of output variables</span>
+<span class="sd">        m_x (ndarray): An array of length `n_x` listing the number of values that each input variable takes</span>
+<span class="sd">        m_y (ndarray):</span>
+<span class="sd">        m_x_cumsum (ndarray):</span>
+<span class="sd">        m_y_cumsum (ndarray):</span>
+<span class="sd">        x_int (ndarray): The input variable data `x` mapped to nonnegative integers</span>
+<span class="sd">        y_int (ndarray): The output variable data `y` mapped to nonnegative integers</span>
+<span class="sd">        cat_x (list): A list of per-row dicts that map the input x symbol data to the integer data in `x_int`</span>
+<span class="sd">        cat_y (list):</span>
+<span class="sd">        cat_x_inv (list): A list of dicts that are the inverses of the list of dicts in `cat_x`</span>
+<span class="sd">        cat_y_inv (list):</span>
+<span class="sd">        w (dict): A dictionary of length `len(degs)` keyed by `degs`. `w[deg]` are the model parameters for degree `deg`</span>
+<span class="sd">        disc (list): A list of length `n_x` of the running discrepancies per variable computed during the model fit</span>
+<span class="sd">        impute (bool): If true, the model will map each combination of hold-one-out input variables to the held out variable</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">        &gt;&gt;&gt; import fem</span>
+<span class="sd">        &gt;&gt;&gt; n, m = 10, 3</span>
+<span class="sd">        &gt;&gt;&gt; fem.discrete.time_series(fem.discrete.model_parameters(n, m), n, m)</span>
+<span class="sd">        &gt;&gt;&gt; model = fem.discrete.model()</span>
+<span class="sd">        &gt;&gt;&gt; model.fit(x[:, :-1], x[:, 1:])</span>
+<span class="sd">        &gt;&gt;&gt; model.predict(x[:, -1])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">degs</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">degs</span> <span class="o">=</span> <span class="n">degs</span>
+
+<div class="viewcode-block" id="model.fit"><a class="viewcode-back" href="../../../fem.discrete.html#fem.discrete.fit.model.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">x</span><span class="p">,</span>
+            <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">iters</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+            <span class="n">overfit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">impute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">svd</span><span class="o">=</span><span class="s1">&#39;approx&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Fit the Potts model to the data</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x (ndarray):</span>
+<span class="sd">            y (ndarray):</span>
+<span class="sd">            iters (int):</span>
+<span class="sd">            overfit (bool):</span>
+<span class="sd">            impute (bool):</span>
+<span class="sd">            svd (str):</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            (dict, list): The fitted model parameters and the running discrepancies</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">degs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">degs</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x_int</span><span class="p">,</span> <span class="n">cat_x</span> <span class="o">=</span> <span class="n">categorize</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="n">m_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cat_x</span><span class="p">])</span>
+        <span class="n">n_x</span> <span class="o">=</span> <span class="n">x_int</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">y</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">impute</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">x</span>
+            <span class="n">y_int</span><span class="p">,</span> <span class="n">cat_y</span> <span class="o">=</span> <span class="n">x_int</span><span class="p">,</span> <span class="n">cat_x</span>
+            <span class="n">m_y</span> <span class="o">=</span> <span class="n">m_x</span>
+            <span class="n">n_y</span> <span class="o">=</span> <span class="n">n_x</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">impute</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+            <span class="n">y_int</span><span class="p">,</span> <span class="n">cat_y</span> <span class="o">=</span> <span class="n">categorize</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+            <span class="n">m_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cat_y</span><span class="p">])</span>
+            <span class="n">n_y</span> <span class="o">=</span> <span class="n">y_int</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">cat_x_inv</span> <span class="o">=</span> <span class="p">[{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">cat</span><span class="o">.</span><span class="n">iteritems</span><span class="p">()}</span> <span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="n">cat_x</span><span class="p">]</span>
+        <span class="n">cat_y_inv</span> <span class="o">=</span> <span class="p">[{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">cat</span><span class="o">.</span><span class="n">iteritems</span><span class="p">()}</span> <span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="n">cat_y</span><span class="p">]</span>
+
+        <span class="n">m_x_cumsum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">m_x</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">m_y_cumsum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">m_y</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">idx_x_by_deg</span> <span class="o">=</span> <span class="p">[</span><span class="n">combinatorics</span><span class="o">.</span><span class="n">multiindices</span><span class="p">(</span><span class="n">n_x</span><span class="p">,</span> <span class="n">deg</span><span class="p">)</span> <span class="k">for</span> <span class="n">deg</span> <span class="ow">in</span> <span class="n">degs</span><span class="p">]</span>
+        <span class="n">mm_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">m_x</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">idx</span><span class="p">])</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">idx_x_by_deg</span><span class="p">])</span>
+        <span class="n">mm_x_cumsum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">mm_x</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">impute</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">impute</span> <span class="ow">and</span> <span class="n">svd</span> <span class="o">==</span> <span class="s1">&#39;approx&#39;</span><span class="p">):</span>
+
+            <span class="n">x_oh</span> <span class="o">=</span> <span class="n">one_hot</span><span class="p">(</span><span class="n">x_int</span><span class="p">,</span> <span class="n">m_x</span><span class="p">,</span> <span class="n">degs</span><span class="p">)</span>
+            <span class="n">x_oh_pinv</span> <span class="o">=</span> <span class="n">svd_pinv</span><span class="p">(</span><span class="n">x_oh</span><span class="p">)</span>
+
+            <span class="n">w</span><span class="p">,</span> <span class="n">disc</span><span class="p">,</span> <span class="n">it</span> <span class="o">=</span> <span class="n">fortran_module</span><span class="o">.</span><span class="n">fortran_module</span><span class="o">.</span><span class="n">discrete_fit</span><span class="p">(</span>
+                <span class="n">x_int</span><span class="p">,</span> <span class="n">y_int</span><span class="p">,</span> <span class="n">m_x</span><span class="p">,</span> <span class="n">m_y</span><span class="p">,</span>
+                <span class="n">m_y</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="n">degs</span><span class="p">,</span> <span class="n">x_oh_pinv</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x_oh_pinv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">x_oh_pinv</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                <span class="n">iters</span><span class="p">,</span> <span class="n">overfit</span><span class="p">,</span> <span class="n">impute</span><span class="p">)</span>
+
+            <span class="n">disc</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">it</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">disc</span><span class="p">)]</span>
+
+        <span class="k">elif</span> <span class="n">impute</span> <span class="ow">and</span> <span class="n">svd</span> <span class="o">==</span> <span class="s1">&#39;exact&#39;</span><span class="p">:</span>
+
+            <span class="n">w</span><span class="p">,</span> <span class="n">disc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">mm_x_cumsum</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">mm_x_cumsum</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])),</span> <span class="p">[]</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_x</span><span class="p">):</span>
+
+                <span class="n">not_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_x</span><span class="p">),</span> <span class="n">i</span><span class="p">)</span>
+                <span class="n">x_oh</span> <span class="o">=</span> <span class="n">one_hot</span><span class="p">(</span><span class="n">x_int</span><span class="p">[</span><span class="n">not_i</span><span class="p">],</span> <span class="n">m_x</span><span class="p">[</span><span class="n">not_i</span><span class="p">],</span> <span class="n">degs</span><span class="p">)</span>
+
+                <span class="n">x_oh_pinv</span> <span class="o">=</span> <span class="n">svd_pinv</span><span class="p">(</span><span class="n">x_oh</span><span class="p">)</span>
+
+                <span class="n">wi</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">it</span> <span class="o">=</span> <span class="n">fortran_module</span><span class="o">.</span><span class="n">fortran_module</span><span class="o">.</span><span class="n">discrete_fit</span><span class="p">(</span>
+                    <span class="n">x_int</span><span class="p">[</span><span class="n">not_i</span><span class="p">],</span> <span class="n">y_int</span><span class="p">[[</span><span class="n">i</span><span class="p">]],</span> <span class="n">m_x</span><span class="p">[</span><span class="n">not_i</span><span class="p">],</span> <span class="n">m_y</span><span class="p">[[</span><span class="n">i</span><span class="p">]],</span>
+                    <span class="n">m_y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="n">degs</span><span class="p">,</span> <span class="n">x_oh_pinv</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x_oh_pinv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                    <span class="n">x_oh_pinv</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">iters</span><span class="p">,</span> <span class="n">overfit</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+                <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+                <span class="n">w</span><span class="p">[</span><span class="n">m_x_cumsum</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">m_x_cumsum</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="p">:</span><span class="n">m_x_cumsum</span><span class="p">[</span>
+                    <span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">wi</span><span class="p">[:,</span> <span class="p">:</span><span class="n">m_x_cumsum</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+                <span class="n">w</span><span class="p">[</span><span class="n">m_x_cumsum</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">m_x_cumsum</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">m_x_cumsum</span><span class="p">[</span>
+                    <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]:]</span> <span class="o">=</span> <span class="n">wi</span><span class="p">[:,</span> <span class="n">m_x_cumsum</span><span class="p">[</span><span class="n">i</span><span class="p">]:]</span>
+
+                <span class="n">disc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">:</span><span class="n">it</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+
+        <span class="n">w</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">deg</span><span class="p">:</span> <span class="n">w</span><span class="p">[:,</span> <span class="n">mm_x_cumsum</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">mm_x_cumsum</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]]</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">deg</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">degs</span><span class="p">)</span>
+        <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">impute</span> <span class="o">=</span> <span class="n">impute</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_int</span> <span class="o">=</span> <span class="n">x_int</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cat_x</span> <span class="o">=</span> <span class="n">cat_x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_x</span> <span class="o">=</span> <span class="n">m_x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_x</span> <span class="o">=</span> <span class="n">n_x</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cat_x_inv</span> <span class="o">=</span> <span class="n">cat_x_inv</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cat_y_inv</span> <span class="o">=</span> <span class="n">cat_y_inv</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_x_cumsum</span> <span class="o">=</span> <span class="n">m_x_cumsum</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_y_cumsum</span> <span class="o">=</span> <span class="n">m_y_cumsum</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_int</span> <span class="o">=</span> <span class="n">y_int</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cat_y</span> <span class="o">=</span> <span class="n">cat_y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_y</span> <span class="o">=</span> <span class="n">m_y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_y</span> <span class="o">=</span> <span class="n">n_y</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">disc</span> <span class="o">=</span> <span class="n">disc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="n">w</span></div>
+
+<div class="viewcode-block" id="model.predict"><a class="viewcode-back" href="../../../fem.discrete.html#fem.discrete.fit.model.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Predict the state of the output variable given input variable `x`</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x (ndarray):</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            (ndarray, ndarray): prediction and probability</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cat_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cat_x</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span>
+        <span class="n">degs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">degs</span>
+        <span class="n">m_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m_x</span>
+        <span class="n">n_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_y</span>
+        <span class="n">m_y_cumsum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m_y_cumsum</span>
+        <span class="n">cat_y_inv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cat_y_inv</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+
+        <span class="n">x_int</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="n">x_int</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">cat_x</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]]</span>
+
+        <span class="n">x_oh</span> <span class="o">=</span> <span class="n">one_hot</span><span class="p">(</span><span class="n">x_int</span><span class="p">,</span> <span class="n">m_x</span><span class="p">,</span> <span class="n">degs</span><span class="p">)</span>
+        <span class="n">x_oh</span> <span class="o">=</span> <span class="n">x_oh</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
+
+        <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+        <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x_oh</span><span class="p">))</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">m_y_cumsum</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_y</span><span class="p">):</span>
+            <span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/=</span> <span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">y_int</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">pi</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">pi</span> <span class="ow">in</span> <span class="n">p</span><span class="p">])</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">y_int</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">pi</span><span class="p">[</span><span class="n">yi</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">yi</span><span class="p">,</span> <span class="n">pi</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">y_int</span><span class="p">,</span> <span class="n">p</span><span class="p">)])</span>
+
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">y_int</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">cat_y_inv</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">y_int</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]]</span>
+
+        <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">y</span><span class="p">,</span> <span class="n">p</span></div></div>
+
+
+<div class="viewcode-block" id="one_hot"><a class="viewcode-back" href="../../../fem.discrete.html#fem.discrete.fit.one_hot">[docs]</a><span class="k">def</span> <span class="nf">one_hot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">degs</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;Compute the one-hot encoding of `x`</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (ndarray): `n` by `l` array of nonnegative integers to be converted to one-hot encoding</span>
+<span class="sd">        m (ndarray): length `n` array storing the number of possible integers in each row of `x`</span>
+<span class="sd">        degs (list): list of degrees of one-hot-encodings to compute</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        csc_matrix: sparse matrix that is the one-hot encoding of `x`. The degrees of one-hot encodings are vertically stacked.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        The one-hot encoding of a discrete variable records the state of the variable by a boolean vector with a 1 at the index which is the state of the variable. The one-hot encoding of a system of discrete variables is the concatenation of the one-hot encodings of each variable. For example if the system of discrete variables :math:`(x_1, x_2, x_3)` has state :math:`(x_1,x_2,x_3)=(1,1,2)` and the variables may take values from the first :math:`m=(3,3,4)` nonnegative integers, i.e. :math:`x_1,x_2\in\{0,1,2\}` and :math:`x_3\in\{0,1,2,3\}`, then the one-hot encoding of :math:`(x_1, x_2, x_3)^T` is :math:`\sigma=(0,1,0,0,1,0,0,0,1,0)^T`.</span>
+
+<span class="sd">        &gt;&gt;&gt; from fem.discrete import one_hot</span>
+<span class="sd">        &gt;&gt;&gt; x = [1,1,2]</span>
+<span class="sd">        &gt;&gt;&gt; m = [3,3,4]</span>
+<span class="sd">        &gt;&gt;&gt; x_oh = one_hot(x, m)</span>
+<span class="sd">        &gt;&gt;&gt; print x_oh.todense()</span>
+<span class="sd">        matrix([[0.],</span>
+<span class="sd">                [1.],</span>
+<span class="sd">                [0.],</span>
+<span class="sd">                [0.],</span>
+<span class="sd">                [1.],</span>
+<span class="sd">                [0.],</span>
+<span class="sd">                [0.],</span>
+<span class="sd">                [0.],</span>
+<span class="sd">                [1.],</span>
+<span class="sd">                [0.]])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+    <span class="n">degs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">degs</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+
+    <span class="n">n</span><span class="p">,</span> <span class="n">l</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="n">degs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">max_deg</span> <span class="o">=</span> <span class="n">degs</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+    <span class="c1"># list of indices that correspond to one hot encoding powers</span>
+    <span class="n">idx_len</span> <span class="o">=</span> <span class="n">combinatorics</span><span class="o">.</span><span class="n">binomial_coefficients</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">max_deg</span><span class="p">)[</span><span class="n">degs</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">deg</span> <span class="ow">in</span> <span class="n">degs</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">combinatorics</span><span class="o">.</span><span class="n">multiindices</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">deg</span><span class="p">):</span>
+            <span class="n">idx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+    <span class="c1"># height of vertical vectors</span>
+    <span class="n">mi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">idx</span><span class="p">])</span>
+    <span class="c1"># height of one-hot encoding</span>
+    <span class="n">m_sum</span> <span class="o">=</span> <span class="n">mi</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+    <span class="c1"># convert one hot power to binary index</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">combinatorics</span><span class="o">.</span><span class="n">mixed_radix_to_base_10</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">m</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">idx</span><span class="p">])</span>
+
+    <span class="c1"># row offsets</span>
+    <span class="n">stratifier</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">mi</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># construct sparse matrix</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">idx_len</span> <span class="o">*</span> <span class="n">l</span><span class="p">)</span>
+    <span class="n">indices</span> <span class="o">=</span> <span class="p">(</span><span class="n">s</span> <span class="o">+</span> <span class="n">stratifier</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">])</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="n">indptr</span> <span class="o">=</span> <span class="n">idx_len</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">l</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">x_oh</span> <span class="o">=</span> <span class="n">csc_matrix</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">indptr</span><span class="p">),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">m_sum</span><span class="p">,</span> <span class="n">l</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">x_oh</span></div>
+
+
+<div class="viewcode-block" id="categorize"><a class="viewcode-back" href="../../../fem.discrete.html#fem.discrete.fit.categorize">[docs]</a><span class="k">def</span> <span class="nf">categorize</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert symbolic x data to integer data. `x` contains a list of lists that are samples of different variables. Each list of samples is mapped to the first number of unique values detected of nonnegative integers.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (list): A list where each element is a list of samples of a different variable</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (list, list): The integer data and a list of dictionaries that map symbol data to integer data for each row of `x`</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">        &gt;&gt;&gt; from fem.discrete import categorize</span>
+<span class="sd">        &gt;&gt;&gt; x = [[&#39;a&#39;, &#39;b&#39;, &#39;a&#39;, &#39;a&#39;], [10, 11, 12, 10, 11]]</span>
+<span class="sd">        &gt;&gt;&gt; x_int, cat_x = categorize(x)</span>
+<span class="sd">        &gt;&gt;&gt; x_int</span>
+<span class="sd">        [array([0, 1, 0, 0]), array([0, 1, 2, 0, 1])]</span>
+<span class="sd">        &gt;&gt;&gt; cat_x</span>
+<span class="sd">        [{&#39;a&#39;: 0, &#39;b&#39;: 1}, {10: 0, 11: 1, 12: 2}]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">l</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">xi</span><span class="p">)</span> <span class="k">for</span> <span class="n">xi</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+
+    <span class="n">x_int</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">l</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span>
+
+    <span class="n">cat_x</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">unique_states</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">unique_states</span><span class="p">)</span>
+        <span class="n">num</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">unique_states</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">m</span><span class="p">)))</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="n">i</span><span class="p">]):</span>
+            <span class="n">x_int</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">num</span><span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]]</span>
+        <span class="n">cat_x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">x_int</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x_int</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">x_int</span><span class="p">,</span> <span class="n">cat_x</span></div>
+
+
+<div class="viewcode-block" id="svd_pinv"><a class="viewcode-back" href="../../../fem.discrete.html#fem.discrete.fit.svd_pinv">[docs]</a><span class="k">def</span> <span class="nf">svd_pinv</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute the SVD-based pseudoinverse matrices</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (csc_matrix): The matrix for which to compute the pseudoinverse</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (csc_matrix, ndarray, csc_matrix): If the SVD of `x` is :math:`USV^T`, this function returns :math:`V`, :math:`S^+`, and :math:`U^T`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">x_rank</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">matrix_rank</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">todense</span><span class="p">())</span>
+    <span class="n">x_svd</span> <span class="o">=</span> <span class="n">svds</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="n">x_rank</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="c1"># x_oh_svd = svds(x_oh, k=x_oh_rank)</span>
+
+    <span class="n">sv_pinv</span> <span class="o">=</span> <span class="n">x_svd</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">zero_sv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">sv_pinv</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">sv_pinv</span><span class="p">[</span><span class="o">~</span><span class="n">zero_sv</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">sv_pinv</span><span class="p">[</span><span class="o">~</span><span class="n">zero_sv</span><span class="p">]</span>
+    <span class="n">sv_pinv</span><span class="p">[</span><span class="n">zero_sv</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">x_pinv</span> <span class="o">=</span> <span class="p">[</span><span class="n">x_svd</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">sv_pinv</span><span class="p">,</span> <span class="n">x_svd</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">x_pinv</span></div>
+</pre></div>
+
+          </div>
+        </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container container-navbar-bottom">
+      <div class="spc-navbar">
+        
+      </div>
+    </div>
+    <div class="container">
+    <div class="footer">
+    <div class="row-fluid">
+    <ul class="inline pull-left">
+      <li>
+        &copy; Copyright 2018, Joe McKenna.
+      </li>
+      <li>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.5.
+      </li>
+    </ul>
+    </div>
+    </div>
+    </div>
+  </body>
+</html>
