@@ -4,9 +4,9 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "# Comparing currency trading strategies\n",
+    "# Currency trading strategies\n",
     "\n",
-    "[![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/joepatmckenna/fem/master?filepath=doc%2Fnotebooks%2Fdiscrete%2F04_currency_trading.ipynb)\n",
+    "[![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/nihcompmed/fem/master?filepath=doc%2Fnotebooks%2Fdiscrete%2F04_currency_trading.ipynb)\n",
     "\n",
     "In this example, we compare two strategies for trading currencies that differ only in the degree of the underlying model. We present an example in which the higher degree model outperforms the lower degree model."
    ]
@@ -369,7 +369,7 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython2",
-   "version": "2.7.12"
+   "version": "2.7.5"
   }
  },
  "nbformat": 4,

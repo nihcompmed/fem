@@ -6,7 +6,7 @@
    "source": [
     "# Direct information from a multiple sequence alignment\n",
     "\n",
-    "[![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/joepatmckenna/fem/master?filepath=doc%2Fnotebooks%2Fdiscrete%2F03_direct_info_from_msa.ipynb)\n",
+    "[![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/nihcompmed/fem/master?filepath=doc%2Fnotebooks%2Fdiscrete%2F03_direct_info_from_msa.ipynb)\n",
     "\n",
     "In this example, we compute coupling strengths between residues of the CRISPR-Cas9 protein amino acid sequence from multiple sequence alignment data. We demonstrate that a statistic called *direct information* [[1]](https://doi.org/10.1073/pnas.1111471108) computed from these couplings is predictive of contacts in observed 3D conformations of the sequence."
    ]
@@ -956,7 +956,7 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython2",
-   "version": "2.7.12"
+   "version": "2.7.5"
   }
  },
  "nbformat": 4,
