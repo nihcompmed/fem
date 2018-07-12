@@ -9,7 +9,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 1,
+   "execution_count": null,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -23,7 +23,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 2,
+   "execution_count": null,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -34,15 +34,16 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 3,
+   "execution_count": null,
    "metadata": {},
    "outputs": [],
    "source": [
     "rva = np.load(os.path.join(data_dir, 'subject_1', 'rva.npy'))\n",
     "trial = 0\n",
     "rv = rva[:, trial, :]\n",
+    "print rv.shape\n",
     "complete_voxels = np.isclose(np.isnan(rv).sum(1), 0)\n",
-    "rv = rv[complete_voxels]"
+    "rv = rv[complete_voxels]\n"
    ]
   },
   {
@@ -222,7 +223,7 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython2",
-   "version": "2.7.5"
+   "version": "2.7.12"
   }
  },
  "nbformat": 4,

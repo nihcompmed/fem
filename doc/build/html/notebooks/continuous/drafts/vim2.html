@@ -263,7 +263,7 @@ div.nboutput div.output_area.stderr {
 <h1>vim2 data<a class="headerlink" href="#vim2-data" title="Permalink to this headline">¶</a></h1>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none"><div class="highlight"><pre>
-<span></span>In [1]:
+<span></span>In [ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython2"><div class="highlight"><pre>
@@ -278,7 +278,7 @@ div.nboutput div.output_area.stderr {
 </div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none"><div class="highlight"><pre>
-<span></span>In [2]:
+<span></span>In [ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython2"><div class="highlight"><pre>
@@ -290,15 +290,17 @@ div.nboutput div.output_area.stderr {
 </div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none"><div class="highlight"><pre>
-<span></span>In [3]:
+<span></span>In [ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython2"><div class="highlight"><pre>
 <span></span><span class="n">rva</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="s1">&#39;subject_1&#39;</span><span class="p">,</span> <span class="s1">&#39;rva.npy&#39;</span><span class="p">))</span>
 <span class="n">trial</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="n">rv</span> <span class="o">=</span> <span class="n">rva</span><span class="p">[:,</span> <span class="n">trial</span><span class="p">,</span> <span class="p">:]</span>
+<span class="k">print</span> <span class="n">rv</span><span class="o">.</span><span class="n">shape</span>
 <span class="n">complete_voxels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">rv</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
 <span class="n">rv</span> <span class="o">=</span> <span class="n">rv</span><span class="p">[</span><span class="n">complete_voxels</span><span class="p">]</span>
+
 </pre></div>
 </div>
 </div>
@@ -469,7 +471,7 @@ train: 0.567757, test: 0.452830
         &copy; Copyright 2018, Joe McKenna.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.5.
       </li>
     </ul>
     </div>
