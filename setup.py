@@ -33,7 +33,7 @@ if __name__ == '__main__':
         long_description=readme,
         author='Joseph P. McKenna',
         author_email='joepatmckenna@gmail.com',
-        url='http://lbm.niddk.nih.gov/mckennajp/fem',
+        url='http://nihcompmed.github.io/fem',
         download_url='https://pypi.org/project/fem',
         packages=['fem', 'fem.discrete', 'fem.continuous'],
         # packages=find_packages(),

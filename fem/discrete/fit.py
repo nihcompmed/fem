@@ -223,7 +223,7 @@ class model(object):
         x_int = [cat_x[i][j] for i, j in enumerate(x)]
         x_oh = one_hot(x_int, m_x)
 
-        return -(x_oh.T * w[1] * x_oh).squeeze()
+        return -0.5 * (x_oh.T * w[1] * x_oh).squeeze()
 
 
 def one_hot(x, m, degs=[1]):
