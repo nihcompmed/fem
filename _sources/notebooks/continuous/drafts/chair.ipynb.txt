@@ -53,7 +53,6 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "\n",
     "confidence = np.zeros((n_unique_objects, n_frames))\n",
     "for frame, d in enumerate(objects):\n",
     "    for o, c in d.iteritems():\n",
