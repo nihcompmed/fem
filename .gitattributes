@@ -1,2 +1,7 @@
 data/* filter=lfs diff=lfs merge=lfs -text
 data/** filter=lfs diff=lfs merge=lfs -text
+data/currency filter=lfs diff=lfs merge=lfs -text
+data/msa filter=lfs diff=lfs merge=lfs -text
+data/sentiment filter=lfs diff=lfs merge=lfs -text
+data/vim2 filter=lfs diff=lfs merge=lfs -text
+data/words filter=lfs diff=lfs merge=lfs -text

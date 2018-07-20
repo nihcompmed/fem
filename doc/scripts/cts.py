@@ -1,86 +1,60 @@
-from scipy.linalg import solve
+from scipy.linalg import solve, lstsq, qr
 from scipy.special import erf as erf
 import matplotlib.pyplot as plt
 import numpy as np
 import multiprocessing as mp
-import os, pickle
 
-data_dir = '../../../../data/vim2/'
+n = 20
+dt, T = 1., int(1e4)
 
-# max number of st/00 st/01 .. chunks to use
-max_i = 1
-# person
-subject = 1
-# seconds offset between movie and brain data
-lag = 1
-# maximum number of time points to use
-truncate = 200
-# fraction of data that is training
-train_frac = 0.8
-
-movie_data = ['' for _ in range(max_i)]
-for i in range(max_i):
-    objects_file = os.path.join(data_dir, 'st', '%02i_objects_py2.pkl' % (i, ))
-    with open(objects_file, 'rb') as f:
-        movie_data[i] = pickle.load(f)
-
-brain_data = [
-    np.load(
-        os.path.join(data_dir, 'subject_%i' % (subject, ), 'rt', '%02i.npy' % (
-            i, ))) for i in range(max_i)
-]
-brain_data = np.hstack(brain_data)
-
-objects = [d for l in movie_data for d in l]
-unique_objects = np.unique([k for d in objects for k in d])
-n_frames = len(objects)
-n_unique_objects = unique_objects.shape[0]
-object_index = dict(zip(unique_objects, range(n_unique_objects)))
-
-confidence = np.zeros((n_unique_objects, n_frames))
-for frame, d in enumerate(objects):
-    for o, c in d.iteritems():
-        confidence[object_index[o], frame] = c
-barcode = confidence.astype(bool)
-
-chair = confidence[object_index['chair']]
-chair_mean = np.array([x.mean() for x in np.split(chair, n_frames / 15)])
-
-chair_mean = np.roll(chair_mean, lag)
-x = np.vstack((chair_mean, brain_data))
-x = x[:, lag:truncate]
-
-split = int(x.shape[1] * train_frac)
-x_train = x[:, :split]
-x_test = x[:, split:]
-
-# n, T = 20, int(1e4)
-n, T = x_train.shape[0]
-dt = 1.
 l = np.int(np.ceil(T / dt))
 sqrt_dt = np.sqrt(dt)
 sqrt_2 = np.sqrt(2)
 rat = sqrt_dt / sqrt_2
 
+w = np.random.uniform(-0.5, 0.5, size=(n, n))
+w[np.diag_indices_from(w)] -= 2.0
+w /= np.sqrt(n)
+
+x = np.zeros((n, l))
+x[:, 0] = np.random.uniform(-1, 1, size=n)
+noise = np.random.normal(size=(n, l - 1))
+for t in range(1, l):
+    x[:, t] = x[:, t - 1] + w.dot(x[:, t - 1]) * dt + noise[:, t - 1] * sqrt_dt
+
 plt.figure(figsize=(16, 4))
-plt.plot(x[:10, :100].T)
+plt.plot(x[:, -100:].T)
 plt.show()
-plt.close()
 
-x1, x2 = x[:, :-1], x[:, 1:]
-sign_dx = np.sign(np.diff(x))
-mean_x = x.mean(1)
-cov_x = np.cov(x)
-x1_mean0 = x1 - mean_x[:, np.newaxis]
+x1 = x[:, :-1]
+s = np.sign(np.diff(x))
+c = (x - x.mean(1)[:, np.newaxis]).T
+c1 = c[:-1].T
+
+# cov_x = np.cov(x)
+# mean_x = x.mean(1)
+# x1_mean0 = x1 - mean_x[:, np.newaxis]
+
+xq, xr = qr(x.T, mode='economic')
 
 
-def fit(i, iters=10):
+def back_sub(r, b):
+    ans = np.empty(b.shape)
+    for i in range(n - 1, -1, -1):
+        ans[i] = b[i]
+        for j in range(i + 1, n):
+            ans[i] -= r[i, j] * ans[j]
+        ans[i] /= r[i, i]
+    return ans
 
-    wi = np.zeros(n)
-    wi[i] = 1
+
+def fit(i, iters=100):
+
+    wi = np.ones(n) / float(n)  #* np.random.choice([-1, 1], size=n)
 
     # erf_last = erf(x1[i] * rat) + 1
-    erf_last = erf(x1[i]) + 1
+    # erf_last = erf(x1[i]) + 1
+    erf_last = np.inf
 
     e = []
 
@@ -92,31 +66,56 @@ def fit(i, iters=10):
         erf_next = erf(h)
         ei = np.linalg.norm(erf_next - erf_last)
         e.append(ei)
-        print i, it, ei
         if ei * ei < 1e-5:
             break
         erf_last = erf_next.copy()
 
-        h *= sign_dx[i] / erf_next
+        h *= s[i] / erf_next
 
-        wi = solve(cov_x, x1_mean0.dot(h) / (l - 1))
+        # wi = solve(cov_x, x1_mean0.dot(h) / (l - 1))
+        # wi = lstsq(x, x1_mean0.dot(h))[0]
+        b = c1.dot(h)
 
+        if False:
+            wi = lstsq(x, b)[0]
+        else:
+            wi = xq.dot(back_sub(xr, b))
+
+        wi = lstsq(c, wi)[0]
+
+    print i, it, ei
     return wi, e[1:]
 
 
-pool = mp.Pool(processes=mp.cpu_count())
-res = pool.map(fit, range(n))
-pool.close()
-pool.terminate()
-pool.join()
+# pool = mp.Pool(processes=mp.cpu_count())
+# res = pool.map(fit, range(n))
+# pool.close()
+# pool.terminate()
+# pool.join()
 
-w = np.empty((n, n))
-w = np.hstack([r[0] for r in res]) / rat
+res = [fit(i) for i in range(n)]
+
+w_fit = np.empty((n, n))
+w_fit = np.hstack([r[0] for r in res]) / rat
 e = [r[1] for r in res]
 
-fig, ax = plt.subplots(1, 2, figsize=(8, 4))
-ax[0].matshow(w, cmap='seismic', aspect='equal')
-for ei in e:
-    ax[1].plot(ei)
+w_flat = w.flatten()
+w_fit_flat = w_fit.flatten()
+plt.scatter(w_flat, w_fit_flat, c='k', s=0.1)
+grid = np.linspace(w_flat.min(), w_flat.max())
+plt.plot(grid, grid, 'r--', lw=0.5)
 plt.show()
-plt.close()
+
+for ei in e:
+    plt.plot(ei)
+plt.show()
+
+# h = np.random.uniform(size=c1.shape[1])
+# b = c1.dot(h)
+
+# # xw=b
+# # r.dot(w) = q[:, p].T.dot(b)
+
+# q, r, p = qr(x, pivoting=True, mode='economic')
+# print np.allclose(x[:, p], q.dot(r))
+# print np.allclose(x, q.dot(r[:, p]))
