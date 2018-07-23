@@ -5,7 +5,7 @@ import numpy as np
 import multiprocessing as mp
 
 n = 20
-dt, T = 1., int(1e4)
+dt, T = 1., int(1e5)
 
 l = np.int(np.ceil(T / dt))
 sqrt_dt = np.sqrt(dt)
@@ -31,11 +31,11 @@ s = np.sign(np.diff(x))
 c = (x - x.mean(1)[:, np.newaxis]).T
 c1 = c[:-1].T
 
-# cov_x = np.cov(x)
-# mean_x = x.mean(1)
-# x1_mean0 = x1 - mean_x[:, np.newaxis]
+cov_x = np.cov(x)
+mean_x = x.mean(1)
+x1_mean0 = x1 - mean_x[:, np.newaxis]
 
-xq, xr = qr(x.T, mode='economic')
+# xq, xr = qr(x.T, mode='economic')
 
 
 def back_sub(r, b):
@@ -72,16 +72,16 @@ def fit(i, iters=100):
 
         h *= s[i] / erf_next
 
-        # wi = solve(cov_x, x1_mean0.dot(h) / (l - 1))
-        # wi = lstsq(x, x1_mean0.dot(h))[0]
-        b = c1.dot(h)
+        wi = solve(cov_x, x1_mean0.dot(h) / (l - 1))
+        # # wi = lstsq(x, x1_mean0.dot(h))[0]
+        # b = c1.dot(h)
 
-        if False:
-            wi = lstsq(x, b)[0]
-        else:
-            wi = xq.dot(back_sub(xr, b))
+        # if False:
+        #     wi = lstsq(x, b)[0]
+        # else:
+        #     wi = xq.dot(back_sub(xr, b))
 
-        wi = lstsq(c, wi)[0]
+        # wi = lstsq(c, wi)[0]
 
     print i, it, ei
     return wi, e[1:]
