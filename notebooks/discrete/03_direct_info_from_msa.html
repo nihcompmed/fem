@@ -372,17 +372,17 @@ families contain the most data.</p>
 </div>
 <div class="output_area docutils container">
 <div>
-<style>
-    .dataframe thead tr:only-child th {
-        text-align: right;
-    }
-
-    .dataframe thead th {
-        text-align: left;
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
     }
 
     .dataframe tbody tr th {
         vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
     }
 </style>
 <table border="1" class="dataframe">
@@ -466,17 +466,17 @@ contains the length of the sequence and sort by that column.</p>
 </div>
 <div class="output_area docutils container">
 <div>
-<style>
-    .dataframe thead tr:only-child th {
-        text-align: right;
-    }
-
-    .dataframe thead th {
-        text-align: left;
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
     }
 
     .dataframe tbody tr th {
         vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
     }
 </style>
 <table border="1" class="dataframe">
@@ -615,17 +615,17 @@ size rank: 7142 of 16479
 </div>
 <div class="output_area docutils container">
 <div>
-<style>
-    .dataframe thead tr:only-child th {
-        text-align: right;
-    }
-
-    .dataframe thead th {
-        text-align: left;
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
     }
 
     .dataframe tbody tr th {
         vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
     }
 </style>
 <table border="1" class="dataframe">
@@ -791,7 +791,7 @@ containing only residues <span class="math">\(r_i\)</span> and <span class="math
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-fit time: 19.88 sec
+fit time: 18.00 sec
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -824,17 +824,17 @@ DataFrame in the <code class="docutils literal"><span class="pre">refs</span></c
 </div>
 <div class="output_area docutils container">
 <div>
-<style>
-    .dataframe thead tr:only-child th {
-        text-align: right;
-    }
-
-    .dataframe thead th {
-        text-align: left;
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
     }
 
     .dataframe tbody tr th {
         vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
     }
 </style>
 <table border="1" class="dataframe">
@@ -1057,24 +1057,18 @@ Structure exists: &#39;../../../data/msa/Pfam-A.full/PF16592/pdb5b2t.ent&#39;
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "f25aeb03547245988ed1f2010fe65cff", "version_minor": 0, "version_major": 2}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "1e5ae532dd064017b00d7ccd24b6eb51", "version_minor": 0, "version_major": 2}</script></div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none"><div class="highlight"><pre>
-<span></span>In [16]:
+<span></span>In [19]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython2"><div class="highlight"><pre>
 <span></span><span class="k">def</span> <span class="nf">plot_pdb</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">res</span><span class="p">):</span>
 
-    <span class="n">pymol</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;fetch_type_default&#39;</span><span class="p">,</span> <span class="s1">&#39;pdb1&#39;</span><span class="p">)</span>
-
     <span class="n">pymol</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">ref</span><span class="o">.</span><span class="n">pdb_id</span><span class="p">)</span>
     <span class="n">pymol</span><span class="o">.</span><span class="n">color</span><span class="p">(</span><span class="s1">&#39;white&#39;</span><span class="p">)</span>
-    <span class="n">pymol</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;distance&#39;</span><span class="p">)</span>
-    <span class="n">pymol</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;dash_gap&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">pymol</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;dash_radius&#39;</span><span class="p">,</span> <span class="mf">0.35</span><span class="p">)</span>
-    <span class="n">pymol</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;dash_color&#39;</span><span class="p">,</span> <span class="s1">&#39;red&#39;</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">r1</span><span class="p">,</span> <span class="n">r2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
         <span class="n">s1</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">/</span><span class="si">%i</span><span class="s1">/CA&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ref</span><span class="o">.</span><span class="n">chain</span><span class="p">,</span> <span class="n">r1</span><span class="p">)</span>
@@ -1097,14 +1091,20 @@ Structure exists: &#39;../../../data/msa/Pfam-A.full/PF16592/pdb5b2t.ent&#39;
 <span class="n">res</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="o">~</span><span class="n">conserved_residues</span><span class="p">[</span><span class="o">~</span><span class="n">missing_aa_seq</span><span class="p">]]</span>
 <span class="n">res</span> <span class="o">=</span> <span class="p">[</span><span class="n">res</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">predicted_contacts</span><span class="p">]</span>
 
+<span class="c1"># pymol.set(&#39;fetch_type_default&#39;, &#39;pdb1&#39;)</span>
+<span class="n">pymol</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;distance&#39;</span><span class="p">)</span>
+<span class="n">pymol</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;dash_gap&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">pymol</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;dash_radius&#39;</span><span class="p">,</span> <span class="mf">0.35</span><span class="p">)</span>
+<span class="n">pymol</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;dash_color&#39;</span><span class="p">,</span> <span class="s1">&#39;red&#39;</span><span class="p">)</span>
+
 <span class="n">pdb_image</span> <span class="o">=</span> <span class="n">plot_pdb</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span>
-<span class="n">Image</span><span class="p">(</span><span class="s1">&#39;5B2T.png&#39;</span><span class="p">)</span>
+<span class="n">Image</span><span class="p">(</span><span class="n">pdb_image</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none"><div class="highlight"><pre>
-<span></span>Out[16]:
+<span></span>Out[19]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -1121,7 +1121,7 @@ divided by the total number of noncontacting residue pairs. A perfect
 binary classifier has an area under the ROC curve equal to 1.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none"><div class="highlight"><pre>
-<span></span>In [17]:
+<span></span>In [20]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython2"><div class="highlight"><pre>
