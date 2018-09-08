@@ -96,12 +96,14 @@
                         title="next chapter">Direct information from a multiple sequence alignment</a></p>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -285,19 +287,19 @@ div.nboutput div.output_area.stderr {
 model to solve anagrams by descending the energy function. We use a data
 set of words that were scraped from news sites, blogs, and Twitter.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2"><div class="highlight"><pre>
-<span></span><span class="o">%</span><span class="k">matplotlib</span> inline
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">fem</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">pickle</span>
-<span class="n">data_dir</span> <span class="o">=</span> <span class="s1">&#39;../../../data/words&#39;</span>
-<span class="k">print</span> <span class="s1">&#39;number of threads: </span><span class="si">%i</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fem</span><span class="o">.</span><span class="n">fortran_module</span><span class="o">.</span><span class="n">fortran_module</span><span class="o">.</span><span class="n">num_threads</span><span class="p">(),)</span>
-<span class="n">cache</span> <span class="o">=</span> <span class="bp">True</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span>%matplotlib inline
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import fem, os, time, pickle
+data_dir = &#39;../../../data/words&#39;
+print &#39;number of threads: %i&#39; % (fem.fortran_module.fortran_module.num_threads(),)
+cache = True
 </pre></div>
 </div>
 </div>
@@ -309,23 +311,23 @@ set of words that were scraped from news sites, blogs, and Twitter.</p>
 number of threads: 8
 </pre></div></div>
 </div>
-<p>We load the word data into to the <code class="docutils literal"><span class="pre">words</span></code> then select a sample of the
-words in the variabel <code class="docutils literal"><span class="pre">x</span></code> to train the model.</p>
+<p>We load the word data into to the <code class="docutils literal notranslate"><span class="pre">words</span></code> then select a sample of the
+words in the variabel <code class="docutils literal notranslate"><span class="pre">x</span></code> to train the model.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2"><div class="highlight"><pre>
-<span></span><span class="c1"># load word data</span>
-<span class="n">n</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="n">words</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%02i</span><span class="s1">.txt&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">n</span><span class="p">,)),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;U</span><span class="si">%i</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">n</span><span class="p">,))</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span># load word data
+n = 10
+words = np.loadtxt(os.path.join(data_dir, &#39;%02i.txt&#39; % (n,)), dtype=&#39;U%i&#39; % (n,))
 
-<span class="c1"># select a sample of words and separate into array of letters</span>
-<span class="n">l</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">1e6</span><span class="p">)</span>
-<span class="n">words_sample</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">words</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">l</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">word</span><span class="p">))</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">words_sample</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
-<span class="k">print</span> <span class="s1">&#39;word length: </span><span class="si">%i</span><span class="s1">, number of words: </span><span class="si">%i</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
+# select a sample of words and separate into array of letters
+l = int(1e6)
+words_sample = np.random.choice(words, size=l, replace=False)
+x = np.array([np.array(list(word)) for word in words_sample]).T
+print &#39;word length: %i, number of words: %i&#39; % x.shape
 </pre></div>
 </div>
 </div>
@@ -337,39 +339,39 @@ words in the variabel <code class="docutils literal"><span class="pre">x</span><
 word length: 10, number of words: 1000000
 </pre></div></div>
 </div>
-<p>Next, we create a model <code class="docutils literal"><span class="pre">model</span></code> and fit it to the word sample using
-<code class="docutils literal"><span class="pre">model.fit(x,</span> <span class="pre">...)</span></code>.</p>
-<p>We plot the model parameter <span class="math">\(W\)</span> heat map and the running
+<p>Next, we create a model <code class="docutils literal notranslate"><span class="pre">model</span></code> and fit it to the word sample using
+<code class="docutils literal notranslate"><span class="pre">model.fit(x,</span> <span class="pre">...)</span></code>.</p>
+<p>We plot the model parameter <span class="math notranslate nohighlight">\(W\)</span> heat map and the running
 discrepancies calculuated during the fit below.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2"><div class="highlight"><pre>
-<span></span><span class="n">model_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%02i</span><span class="s1">.pkl&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">n</span><span class="p">,))</span>
-<span class="k">if</span> <span class="n">cache</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">model_file</span><span class="p">):</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">model_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">model</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-    <span class="k">print</span> <span class="s1">&#39;loaded cached model&#39;</span>
-<span class="k">else</span><span class="p">:</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">fem</span><span class="o">.</span><span class="n">discrete</span><span class="o">.</span><span class="n">model</span><span class="p">()</span>
-    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">overfit</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">svd</span><span class="o">=</span><span class="s1">&#39;exact&#39;</span><span class="p">)</span>
-    <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="k">print</span> <span class="s1">&#39;fit time: </span><span class="si">%.02f</span><span class="s1"> minutes&#39;</span> <span class="o">%</span> <span class="p">((</span><span class="n">end</span><span class="o">-</span><span class="n">start</span><span class="p">)</span><span class="o">/</span><span class="mf">60.</span><span class="p">,)</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">model_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span>model_file = os.path.join(data_dir, &#39;%02i.pkl&#39; % (n,))
+if cache and os.path.exists(model_file):
+    with open(model_file, &#39;r&#39;) as f:
+        model = pickle.load(f)
+    print &#39;loaded cached model&#39;
+else:
+    model = fem.discrete.model()
+    start = time.time()
+    model.fit(x, overfit=False, svd=&#39;exact&#39;)
+    end = time.time()
+    print &#39;fit time: %.02f minutes&#39; % ((end-start)/60.,)
+    with open(model_file, &#39;w&#39;) as f:
+        pickle.dump(model, f)
 
-<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
-<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">disc</span><span class="p">:</span>
-    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)),</span> <span class="n">d</span><span class="p">,</span> <span class="s1">&#39;k-&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;iteration&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;discrepancy&#39;</span><span class="p">)</span>
+fig, ax = plt.subplots(1, 2, figsize=(12,6))
+for d in model.disc:
+    ax[0].plot(1+np.arange(len(d)), d, &#39;k-&#39;)
+ax[0].set_xlabel(&#39;iteration&#39;)
+ax[0].set_ylabel(&#39;discrepancy&#39;)
 
-<span class="n">scale</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">matshow</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">aspect</span><span class="o">=</span><span class="s1">&#39;equal&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;seismic&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="n">scale</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">scale</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+scale = np.abs(model.w[1]).max()
+ax[1].matshow(model.w[1], aspect=&#39;equal&#39;, cmap=&#39;seismic&#39;, vmin=-scale, vmax=scale)
+plt.show()
 </pre></div>
 </div>
 </div>
@@ -388,102 +390,102 @@ loaded cached model
 <img alt="../../_images/notebooks_discrete_02_anagram_solver_5_1.png" src="../../_images/notebooks_discrete_02_anagram_solver_5_1.png" />
 </div>
 </div>
-<p>The natural definition of the energy of the word <span class="math">\(w\)</span> given the
-model with parameters <span class="math">\(W\)</span> is
-<span class="math">\(E(\sigma)=-\frac12\sigma^TW\sigma\)</span> where <span class="math">\(\sigma\)</span> is the
-one-hot encoding of <span class="math">\(w\)</span>. We may use this energy to design a Markov
+<p>The natural definition of the energy of the word <span class="math notranslate nohighlight">\(w\)</span> given the
+model with parameters <span class="math notranslate nohighlight">\(W\)</span> is
+<span class="math notranslate nohighlight">\(E(\sigma)=-\frac12\sigma^TW\sigma\)</span> where <span class="math notranslate nohighlight">\(\sigma\)</span> is the
+one-hot encoding of <span class="math notranslate nohighlight">\(w\)</span>. We may use this energy to design a Markov
 chain Monte Carlo approach to solve anagrams, that is to rearrage the
 letters in a given permuted word with permuted letters to recover the
-original word. The function <code class="docutils literal"><span class="pre">solve_anagram</span></code> below uses the simulated
+original word. The function <code class="docutils literal notranslate"><span class="pre">solve_anagram</span></code> below uses the simulated
 annealing approach to attempt to solve anagrams under the assumption
 that the original word minimizes the energy function constrained to the
 set of permuations of the input anagram.</p>
-<p>Given an anagram <span class="math">\(w\)</span>, we propose a modified anagram
-<span class="math">\(\tilde{w}\)</span> by swapping a random pair of adjacent letters in
-<span class="math">\(w\)</span>.</p>
+<p>Given an anagram <span class="math notranslate nohighlight">\(w\)</span>, we propose a modified anagram
+<span class="math notranslate nohighlight">\(\tilde{w}\)</span> by swapping a random pair of adjacent letters in
+<span class="math notranslate nohighlight">\(w\)</span>.</p>
 <p>We accept the proposal with probability
-<span class="math">\(\exp\left({E(w)-E(\tilde{w})\over T}\right)\)</span> where <span class="math">\(T\)</span> is a
-temperature that decays exponentially from <span class="math">\(T_{max}&gt;1\)</span> at step 0
-to <span class="math">\(T_{min}&lt;1\)</span> at step <code class="docutils literal"><span class="pre">max_steps</span></code>. We record the anagram with
+<span class="math notranslate nohighlight">\(\exp\left({E(w)-E(\tilde{w})\over T}\right)\)</span> where <span class="math notranslate nohighlight">\(T\)</span> is a
+temperature that decays exponentially from <span class="math notranslate nohighlight">\(T_{max}&gt;1\)</span> at step 0
+to <span class="math notranslate nohighlight">\(T_{min}&lt;1\)</span> at step <code class="docutils literal notranslate"><span class="pre">max_steps</span></code>. We record the anagram with
 the lowest energy encountered and return that as the final guess.</p>
 <p>We plot the running energies for a number of example anagrams below.
 Additionally, we tabulate the solution, initial anagram, and the best
 guess as well as their energies below.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">solve_anagram</span><span class="p">(</span><span class="n">anagram</span><span class="p">,</span> <span class="n">max_steps</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="mf">2e5</span><span class="p">)):</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span>def solve_anagram(anagram, max_steps=int(2e5)):
 
-    <span class="k">def</span> <span class="nf">propose</span><span class="p">(</span><span class="n">anagram</span><span class="p">,</span> <span class="n">pairs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Propose a new anagram by swapping adjacent letters&quot;&quot;&quot;</span>
-        <span class="n">pair</span> <span class="o">=</span> <span class="n">pairs</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
-        <span class="n">proposal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">anagram</span><span class="p">))</span>
-        <span class="n">proposal</span><span class="p">[</span><span class="n">pair</span><span class="p">]</span> <span class="o">=</span> <span class="n">proposal</span><span class="p">[</span><span class="n">pair</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">proposal</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">proposal</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">proposal</span>
+    def propose(anagram, pairs):
+        &quot;&quot;&quot;Propose a new anagram by swapping adjacent letters&quot;&quot;&quot;
+        pair = pairs[np.random.randint(n-1)]
+        proposal = np.array(list(anagram))
+        proposal[pair] = proposal[pair][::-1]
+        proposal = &#39;&#39;.join(proposal)
+        return proposal
 
-    <span class="k">def</span> <span class="nf">accept</span><span class="p">(</span><span class="n">anagram_energy</span><span class="p">,</span> <span class="n">proposal_energy</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Accept proposed anagram with simulated annealing probability&quot;&quot;&quot;</span>
-        <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">((</span><span class="n">anagram_energy</span> <span class="o">-</span> <span class="n">proposal_energy</span><span class="p">)</span> <span class="o">/</span> <span class="n">t</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">p</span>
+    def accept(anagram_energy, proposal_energy, t=1.0):
+        &quot;&quot;&quot;Accept proposed anagram with simulated annealing probability&quot;&quot;&quot;
+        p = np.exp((anagram_energy - proposal_energy) / t)
+        return np.random.uniform() &lt; p
 
-    <span class="k">def</span> <span class="nf">temperature</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">max_steps</span><span class="p">,</span> <span class="n">t_min</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">,</span> <span class="n">t_max</span><span class="o">=</span><span class="mf">1e2</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return temperature given progress to max_steps&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">t_max</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">step</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">max_steps</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">t_min</span> <span class="o">/</span> <span class="n">t_max</span><span class="p">))</span>
+    def temperature(step, max_steps, t_min=1e-2, t_max=1e2):
+        &quot;&quot;&quot;Return temperature given progress to max_steps&quot;&quot;&quot;
+        return t_max * np.exp(step / float(max_steps) * np.log(t_min / t_max))
 
-    <span class="c1"># pairs of neighboring letter indices</span>
-    <span class="n">pairs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]])</span><span class="o">.</span><span class="n">T</span>
+    # pairs of neighboring letter indices
+    pairs = np.stack([range(n)[:-1], range(n)[1:]]).T
 
-    <span class="c1"># initial energy</span>
-    <span class="n">anagram_energy</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">energy</span><span class="p">(</span><span class="n">anagram</span><span class="p">)</span>
-    <span class="n">energy_history</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="n">anagram_energy</span><span class="p">]]</span>
+    # initial energy
+    anagram_energy = model.energy(anagram)
+    energy_history = [[0, anagram_energy]]
 
-    <span class="c1"># best guess</span>
-    <span class="n">answer</span> <span class="o">=</span> <span class="p">[</span><span class="n">anagram</span><span class="p">,</span> <span class="n">anagram_energy</span><span class="p">]</span>
+    # best guess
+    answer = [anagram, anagram_energy]
 
-    <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_steps</span><span class="p">):</span>
+    for step in range(max_steps):
 
-        <span class="c1"># propose new anagram and compute energy</span>
-        <span class="n">proposal</span> <span class="o">=</span> <span class="n">propose</span><span class="p">(</span><span class="n">anagram</span><span class="p">,</span> <span class="n">pairs</span><span class="p">)</span>
-        <span class="n">proposal_energy</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">energy</span><span class="p">(</span><span class="n">proposal</span><span class="p">)</span>
+        # propose new anagram and compute energy
+        proposal = propose(anagram, pairs)
+        proposal_energy = model.energy(proposal)
 
-        <span class="k">if</span> <span class="n">accept</span><span class="p">(</span><span class="n">anagram_energy</span><span class="p">,</span> <span class="n">proposal_energy</span><span class="p">,</span> <span class="n">temperature</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">max_steps</span><span class="p">)):</span>
+        if accept(anagram_energy, proposal_energy, temperature(step, max_steps)):
 
-            <span class="c1"># update current guess</span>
-            <span class="n">anagram</span><span class="p">,</span> <span class="n">anagram_energy</span> <span class="o">=</span> <span class="n">proposal</span><span class="p">,</span> <span class="n">proposal_energy</span>
-            <span class="n">energy_history</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">step</span><span class="p">,</span> <span class="n">anagram_energy</span><span class="p">])</span>
+            # update current guess
+            anagram, anagram_energy = proposal, proposal_energy
+            energy_history.append([step, anagram_energy])
 
-            <span class="c1"># record buest guess</span>
-            <span class="k">if</span> <span class="n">anagram_energy</span> <span class="o">&lt;</span> <span class="n">answer</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
-                <span class="n">answer</span> <span class="o">=</span> <span class="p">[</span><span class="n">anagram</span><span class="p">,</span> <span class="n">anagram_energy</span><span class="p">]</span>
+            # record buest guess
+            if anagram_energy &lt; answer[1]:
+                answer = [anagram, anagram_energy]
 
-    <span class="n">energy_history</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">energy_history</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
-    <span class="k">return</span> <span class="n">answer</span><span class="p">,</span> <span class="n">energy_history</span>
+    energy_history = np.array(energy_history).T
+    return answer, energy_history
 
-<span class="n">tab</span><span class="p">,</span> <span class="n">e</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
-<span class="c1"># for a random selection of words</span>
-<span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">words</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
-    <span class="c1"># make an anagram by permuting the letters in the word</span>
-    <span class="n">anagram</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">word</span><span class="p">)))</span>
-    <span class="c1"># solve the anagram with a simulated annealing approach</span>
-    <span class="n">answer</span><span class="p">,</span> <span class="n">energy_history</span> <span class="o">=</span> <span class="n">solve_anagram</span><span class="p">(</span><span class="n">anagram</span><span class="p">)</span>
-    <span class="n">tab</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">word</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">energy</span><span class="p">(</span><span class="n">word</span><span class="p">),</span> <span class="n">anagram</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">energy</span><span class="p">(</span><span class="n">anagram</span><span class="p">),</span> <span class="n">answer</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">answer</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
-    <span class="n">e</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">energy_history</span><span class="p">)</span>
+tab, e = [], []
+# for a random selection of words
+for word in np.random.choice(words, size=5, replace=False):
+    # make an anagram by permuting the letters in the word
+    anagram = &#39;&#39;.join(np.random.permutation(list(word)))
+    # solve the anagram with a simulated annealing approach
+    answer, energy_history = solve_anagram(anagram)
+    tab.append([word, model.energy(word), anagram, model.energy(anagram), answer[0], answer[1]])
+    e.append(energy_history)
 
-<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
-<span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
-<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ei</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="o">*</span><span class="n">ei</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">tab</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;proposal number&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;proposal energy&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+fig = plt.figure(figsize=(12,6))
+ax = plt.gca()
+for i, ei in enumerate(e):
+    ax.plot(*ei, lw=0.5, label=tab[i][0])
+ax.set_xlabel(&#39;proposal number&#39;)
+ax.set_ylabel(&#39;proposal energy&#39;)
+plt.legend()
+plt.show()
 
-<span class="n">tab</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">tab</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;word&#39;</span><span class="p">,</span> <span class="s1">&#39;energy&#39;</span><span class="p">,</span> <span class="s1">&#39;anagram&#39;</span><span class="p">,</span> <span class="s1">&#39;energy&#39;</span><span class="p">,</span> <span class="s1">&#39;answer&#39;</span><span class="p">,</span> <span class="s1">&#39;energy&#39;</span><span class="p">])</span>
-<span class="n">tab</span>
+tab = pd.DataFrame(data=tab, columns=[&#39;word&#39;, &#39;energy&#39;, &#39;anagram&#39;, &#39;energy&#39;, &#39;answer&#39;, &#39;energy&#39;])
+tab
 </pre></div>
 </div>
 </div>
@@ -495,7 +497,7 @@ guess as well as their energies below.</p>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>Out[4]:
 </pre></div>
 </div>
@@ -581,28 +583,28 @@ we demonstrate that the search repeatedly guesses “impression” given an
 anagram of “permission” because the model is in a lower energy state at
 “impression.”</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2"><div class="highlight"><pre>
-<span></span><span class="c1"># adversarial examples:</span>
-<span class="c1"># permission &lt;-&gt; impression</span>
-<span class="c1"># nonduality &lt;-&gt; undylation</span>
-<span class="c1"># treatments &lt;-&gt; restatement</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span># adversarial examples:
+# permission &lt;-&gt; impression
+# nonduality &lt;-&gt; undylation
+# treatments &lt;-&gt; restatement
 
-<span class="n">word</span> <span class="o">=</span> <span class="s1">&#39;permission&#39;</span>
+word = &#39;permission&#39;
 
-<span class="k">print</span> <span class="s1">&#39;word: </span><span class="si">%s</span><span class="s1">, energy: </span><span class="si">%f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">energy</span><span class="p">(</span><span class="n">word</span><span class="p">))</span>
+print &#39;word: %s, energy: %f&#39; % (word, model.energy(word))
 
-<span class="n">tab</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
-    <span class="n">anagram</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">word</span><span class="p">)))</span>
-    <span class="n">answer</span> <span class="o">=</span> <span class="n">solve_anagram</span><span class="p">(</span><span class="n">anagram</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">tab</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">anagram</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">energy</span><span class="p">(</span><span class="n">anagram</span><span class="p">),</span> <span class="n">answer</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">answer</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+tab = []
+for attempt in range(5):
+    anagram = &#39;&#39;.join(np.random.permutation(list(word)))
+    answer = solve_anagram(anagram)[0]
+    tab.append([anagram, model.energy(anagram), answer[0], answer[1]])
 
-<span class="n">tab</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">tab</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;anagram&#39;</span><span class="p">,</span> <span class="s1">&#39;energy&#39;</span><span class="p">,</span> <span class="s1">&#39;answer&#39;</span><span class="p">,</span> <span class="s1">&#39;energy&#39;</span><span class="p">])</span>
-<span class="n">tab</span>
+tab = pd.DataFrame(data=tab, columns=[&#39;anagram&#39;, &#39;energy&#39;, &#39;answer&#39;, &#39;energy&#39;])
+tab
 </pre></div>
 </div>
 </div>
@@ -615,7 +617,7 @@ word: permission, energy: -10.574511
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>Out[5]:
 </pre></div>
 </div>
@@ -707,7 +709,7 @@ word: permission, energy: -10.574511
         &copy; Copyright 2018, Joe McKenna.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.5.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.7.9.
       </li>
     </ul>
     </div>

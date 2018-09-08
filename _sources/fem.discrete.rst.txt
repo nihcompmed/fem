@@ -1,27 +1,27 @@
-fem\.discrete package
-=====================
+fem.discrete package
+====================
 
 Submodules
 ----------
 
-fem\.discrete\.combinatorics module
------------------------------------
+fem.discrete.combinatorics module
+---------------------------------
 
 .. automodule:: fem.discrete.combinatorics
     :members:
     :undoc-members:
     :show-inheritance:
 
-fem\.discrete\.fit module
--------------------------
+fem.discrete.fit module
+-----------------------
 
 .. automodule:: fem.discrete.fit
     :members:
     :undoc-members:
     :show-inheritance:
 
-fem\.discrete\.simulate module
-------------------------------
+fem.discrete.simulate module
+----------------------------
 
 .. automodule:: fem.discrete.simulate
     :members:

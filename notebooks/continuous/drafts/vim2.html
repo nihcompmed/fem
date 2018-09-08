@@ -78,12 +78,14 @@
         <div class="sphinxsidebarwrapper">
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -262,69 +264,69 @@ div.nboutput div.output_area.stderr {
 <div class="section" id="vim2-data">
 <h1>vim2 data<a class="headerlink" href="#vim2-data" title="Permalink to this headline">¶</a></h1>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2"><div class="highlight"><pre>
-<span></span><span class="o">%</span><span class="k">matplotlib</span> inline
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">fem</span>
-<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">pickle</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
-<span class="n">data_dir</span> <span class="o">=</span> <span class="s1">&#39;../../../data/vim2/&#39;</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span>%matplotlib inline
+import numpy as np
+import fem
+import os, pickle
+import matplotlib.pyplot as plt
+data_dir = &#39;../../../data/vim2/&#39;
 </pre></div>
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2"><div class="highlight"><pre>
-<span></span><span class="n">sv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="s1">&#39;sv.npy&#39;</span><span class="p">))</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="s1">&#39;sv_objects2.pkl&#39;</span><span class="p">),</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">sv_objects</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span>sv = np.load(os.path.join(data_dir, &#39;sv.npy&#39;))
+with open(os.path.join(data_dir, &#39;sv_objects2.pkl&#39;), &#39;rb&#39;) as f:
+    sv_objects = pickle.load(f)
 </pre></div>
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2"><div class="highlight"><pre>
-<span></span><span class="n">rva</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="s1">&#39;subject_1&#39;</span><span class="p">,</span> <span class="s1">&#39;rva.npy&#39;</span><span class="p">))</span>
-<span class="n">trial</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="n">rv</span> <span class="o">=</span> <span class="n">rva</span><span class="p">[:,</span> <span class="n">trial</span><span class="p">,</span> <span class="p">:]</span>
-<span class="k">print</span> <span class="n">rv</span><span class="o">.</span><span class="n">shape</span>
-<span class="n">complete_voxels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">rv</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
-<span class="n">rv</span> <span class="o">=</span> <span class="n">rv</span><span class="p">[</span><span class="n">complete_voxels</span><span class="p">]</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span>rva = np.load(os.path.join(data_dir, &#39;subject_1&#39;, &#39;rva.npy&#39;))
+trial = 0
+rv = rva[:, trial, :]
+print rv.shape
+complete_voxels = np.isclose(np.isnan(rv).sum(1), 0)
+rv = rv[complete_voxels]
 
 </pre></div>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2"><div class="highlight"><pre>
-<span></span><span class="n">person_confidence</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;person&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;person&#39;</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">sv_objects</span><span class="p">])</span>
-<span class="n">person_confidence_downsampled</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">person_confidence</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">person_confidence</span><span class="p">)</span><span class="o">/</span><span class="mi">15</span><span class="p">)</span>
-<span class="p">])</span>
-<span class="n">person_confidence_downsampled</span> <span class="o">-=</span> <span class="n">person_confidence_downsampled</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
-<span class="n">person_confidence_downsampled</span> <span class="o">/=</span> <span class="n">person_confidence_downsampled</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span>person_confidence = np.array([d[&#39;person&#39;] if &#39;person&#39; in d.keys() else 0 for d in sv_objects])
+person_confidence_downsampled = np.array([x.mean() for x in np.split(person_confidence, len(person_confidence)/15)
+])
+person_confidence_downsampled -= person_confidence_downsampled.mean()
+person_confidence_downsampled /= person_confidence_downsampled.std()
 
-<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">person_confidence</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">person_confidence_downsampled</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">ax</span><span class="p">:</span>
-    <span class="n">a</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;confidence&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;frame&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;t (s)&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+fig, ax = plt.subplots(2,1, figsize=(12, 6))
+ax[0].plot(person_confidence)
+ax[1].plot(person_confidence_downsampled)
+for a in ax:
+    a.set_ylabel(&#39;confidence&#39;)
+ax[0].set_xlabel(&#39;frame&#39;)
+ax[1].set_xlabel(&#39;t (s)&#39;)
+plt.tight_layout()
+plt.show()
 </pre></div>
 </div>
 </div>
@@ -336,45 +338,45 @@ div.nboutput div.output_area.stderr {
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2"><div class="highlight"><pre>
-<span></span><span class="n">thin</span><span class="p">,</span> <span class="n">lag</span> <span class="o">=</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">5</span>
-<span class="n">rv</span> <span class="o">=</span> <span class="n">rv</span><span class="p">[::</span><span class="n">thin</span><span class="p">]</span>
-<span class="n">rv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">rv</span><span class="p">,</span> <span class="n">lag</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">person_confidence_downsampled</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span> <span class="n">rv</span><span class="p">))</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:,:</span><span class="o">-</span><span class="n">lag</span><span class="p">]</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span>thin, lag = 11, 5
+rv = rv[::thin]
+rv = np.roll(rv, lag, axis=1)
+x = np.vstack((person_confidence_downsampled[np.newaxis, :], rv))
+x = x[:,:-lag]
 
-<span class="n">train_frac</span> <span class="o">=</span> <span class="mf">0.8</span>
-<span class="n">split</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">train_frac</span> <span class="o">*</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-<span class="n">x_train</span><span class="p">,</span> <span class="n">x_test</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:,:</span><span class="n">split</span><span class="p">],</span>  <span class="n">x</span><span class="p">[:,</span><span class="n">split</span><span class="p">:]</span>
+train_frac = 0.8
+split = int(train_frac * x.shape[1])
+x_train, x_test = x[:,:split],  x[:,split:]
 </pre></div>
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2"><div class="highlight"><pre>
-<span></span><span class="n">w</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">fem</span><span class="o">.</span><span class="n">continuous</span><span class="o">.</span><span class="n">fit</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_train</span><span class="p">[:,:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">x_train</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:],</span> <span class="n">iters</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span>w, d = fem.continuous.fit.fit(x_train[:,:-1], x_train[:,1:], iters=10)
 </pre></div>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2"><div class="highlight"><pre>
-<span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;seismic&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">di</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
-    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">di</span><span class="p">,</span> <span class="s1">&#39;k-&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span>fig, ax = plt.subplots(1, 2, figsize=(8, 4))
+ax[0].imshow(w, cmap=&#39;seismic&#39;)
+ax[0].axis(&#39;off&#39;)
+for di in d:
+    ax[1].plot(di, &#39;k-&#39;)
+plt.show()
 </pre></div>
 </div>
 </div>
@@ -386,18 +388,18 @@ div.nboutput div.output_area.stderr {
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2"><div class="highlight"><pre>
-<span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">person_confidence_downsampled</span><span class="p">,</span> <span class="s1">&#39;k-&#39;</span><span class="p">)</span>
-<span class="n">y</span> <span class="o">=</span> <span class="o">-</span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">[:,:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="s1">&#39;r-&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span>fig, ax = plt.subplots(1, 1, figsize=(12, 4))
+ax.plot(person_confidence_downsampled, &#39;k-&#39;)
+y = -w[0].dot(x[:,:-1])
+ax.plot(y, &#39;r-&#39;)
+ax.set_xlim(0, 200)
+ax.set_ylim(-5, 5)
+plt.show()
 </pre></div>
 </div>
 </div>
@@ -409,27 +411,27 @@ div.nboutput div.output_area.stderr {
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2"><div class="highlight"><pre>
-<span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
-<span class="n">z1</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">:]</span> <span class="o">&gt;</span> <span class="mi">0</span>
-<span class="n">z2</span> <span class="o">=</span> <span class="n">y</span> <span class="o">&gt;</span> <span class="mi">0</span>
-<span class="n">z3</span> <span class="o">=</span> <span class="n">z1</span> <span class="o">==</span> <span class="n">z2</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">z1</span><span class="p">,</span> <span class="n">z2</span><span class="p">,</span> <span class="n">z3</span><span class="p">]),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Greys&#39;</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">([</span><span class="s1">&#39;true&#39;</span><span class="p">,</span> <span class="s1">&#39;prediction&#39;</span><span class="p">,</span> <span class="s1">&#39;agreement&#39;</span><span class="p">])</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span>fig, ax = plt.subplots(1, 1, figsize=(12, 2))
+z1 = x[0,1:] &gt; 0
+z2 = y &gt; 0
+z3 = z1 == z2
+ax.imshow(np.vstack([z1, z2, z3]), cmap=&#39;Greys&#39;, aspect=&#39;auto&#39;)
+ax.set_yticks(range(3))
+ax.set_yticklabels([&#39;true&#39;, &#39;prediction&#39;, &#39;agreement&#39;])
 
-<span class="n">split</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">train_frac</span> <span class="o">*</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-<span class="k">print</span> <span class="s1">&#39;train: </span><span class="si">%f</span><span class="s1">, test: </span><span class="si">%f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">z3</span><span class="p">[:</span><span class="n">split</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">z3</span><span class="p">[</span><span class="n">split</span><span class="p">:]</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
-<span class="c1"># lag, accuracy, (thin=11)</span>
-<span class="c1"># 1, train: 0.563805, test: 0.485981</span>
-<span class="c1"># 2, train: 0.567442, test: 0.523364</span>
-<span class="c1"># 3, train: 0.568765, test: 0.485981</span>
-<span class="c1"># 4, train: 0.567757, test: 0.570093</span>
-<span class="c1"># 5, train: 0.567757, test: 0.452830</span>
+split = int(train_frac * x.shape[1])
+print &#39;train: %f, test: %f&#39; % (z3[:split].mean(), z3[split:].mean())
+# lag, accuracy, (thin=11)
+# 1, train: 0.563805, test: 0.485981
+# 2, train: 0.567442, test: 0.523364
+# 3, train: 0.568765, test: 0.485981
+# 4, train: 0.567757, test: 0.570093
+# 5, train: 0.567757, test: 0.452830
 </pre></div>
 </div>
 </div>
@@ -446,6 +448,16 @@ train: 0.567757, test: 0.452830
 </div>
 <div class="output_area docutils container">
 <img alt="../../../_images/notebooks_continuous_drafts_vim2_9_1.png" src="../../../_images/notebooks_continuous_drafts_vim2_9_1.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span>
+</pre></div>
 </div>
 </div>
 </div>
@@ -471,7 +483,7 @@ train: 0.567757, test: 0.452830
         &copy; Copyright 2018, Joe McKenna.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.5.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.7.9.
       </li>
     </ul>
     </div>

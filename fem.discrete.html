@@ -96,12 +96,14 @@
                         title="next chapter">fortran_module extension</a></p>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -141,8 +143,8 @@
 </tbody>
 </table>
 <p class="rubric">Examples</p>
-<p>Compute the binomial coefficients <span class="math">\({4\choose 0}\)</span>, <span class="math">\({4\choose 1}\)</span>, and <span class="math">\({4\choose 2}\)</span></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fem.discrete.combinatorics</span> <span class="k">import</span> <span class="n">binomial_coefficients</span>
+<p>Compute the binomial coefficients <span class="math notranslate nohighlight">\({4\choose 0}\)</span>, <span class="math notranslate nohighlight">\({4\choose 1}\)</span>, and <span class="math notranslate nohighlight">\({4\choose 2}\)</span></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fem.discrete.combinatorics</span> <span class="k">import</span> <span class="n">binomial_coefficients</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">binomial_coefficients</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 <span class="go">array([1, 4, 6])</span>
 </pre></div>
@@ -166,11 +168,11 @@
 </tbody>
 </table>
 <p class="rubric">Examples</p>
-<p>Generally, the base 10 representation of the mixed radix number <span class="math">\(x_n\ldots x_1\)</span> where <span class="math">\(x_i\)</span> is a digit in place value <span class="math">\(i\)</span> with base <span class="math">\(b_i\)</span> is</p>
-<div class="math">
+<p>Generally, the base 10 representation of the mixed radix number <span class="math notranslate nohighlight">\(x_n\ldots x_1\)</span> where <span class="math notranslate nohighlight">\(x_i\)</span> is a digit in place value <span class="math notranslate nohighlight">\(i\)</span> with base <span class="math notranslate nohighlight">\(b_i\)</span> is</p>
+<div class="math notranslate nohighlight">
 \[\sum_{i=1}^nx_i\prod_{j=i+1}^nb_j = x_n + b_nx_{n-1} + b_nb_{n-1}x_{n-2} + \cdots + b_n\cdots b_2x_1\]</div>
-<p>Convert 111 with bases <span class="math">\((b_1,b_2,b_3)=(2,3,4)\)</span> to base 10:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fem.discrete.combinatorics</span> <span class="k">import</span> <span class="n">mixed_radix_to_base_10</span>
+<p>Convert 111 with bases <span class="math notranslate nohighlight">\((b_1,b_2,b_3)=(2,3,4)\)</span> to base 10:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fem.discrete.combinatorics</span> <span class="k">import</span> <span class="n">mixed_radix_to_base_10</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mixed_radix_to_base_10</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">])</span>
 <span class="go">17</span>
 </pre></div>
@@ -180,7 +182,7 @@
 <dl class="function">
 <dt id="fem.discrete.combinatorics.multiindices">
 <code class="descclassname">fem.discrete.combinatorics.</code><code class="descname">multiindices</code><span class="sig-paren">(</span><em>n</em>, <em>k</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fem/discrete/combinatorics.html#multiindices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fem.discrete.combinatorics.multiindices" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an ordered list of distinct tuples of the first <span class="math">\(n\)</span> nonnegative integers.</p>
+<dd><p>Return an ordered list of distinct tuples of the first <span class="math notranslate nohighlight">\(n\)</span> nonnegative integers.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -191,7 +193,7 @@
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">a list of distinct tupes of shape <span class="math">\({n\choose k}\)</span> by <span class="math">\(k\)</span></p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">a list of distinct tupes of shape <span class="math notranslate nohighlight">\({n\choose k}\)</span> by <span class="math notranslate nohighlight">\(k\)</span></p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">ndarray</p>
@@ -200,7 +202,7 @@
 </tbody>
 </table>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fem.discrete.combinatorics</span> <span class="k">import</span> <span class="n">multiindices</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fem.discrete.combinatorics</span> <span class="k">import</span> <span class="n">multiindices</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">multiindices</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 <span class="go">array([[0, 1], [0, 2], [0, 3], [1, 2], [1, 3], [2, 3]])</span>
 </pre></div>
@@ -228,7 +230,7 @@
 </tbody>
 </table>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fem.discrete</span> <span class="k">import</span> <span class="n">categorize</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fem.discrete</span> <span class="k">import</span> <span class="n">categorize</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">],</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">]]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x_int</span><span class="p">,</span> <span class="n">cat_x</span> <span class="o">=</span> <span class="n">categorize</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x_int</span>
@@ -242,7 +244,7 @@
 <dl class="class">
 <dt id="fem.discrete.fit.model">
 <em class="property">class </em><code class="descclassname">fem.discrete.fit.</code><code class="descname">model</code><span class="sig-paren">(</span><em>degs=[1]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fem/discrete/fit.html#model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fem.discrete.fit.model" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This class implements a Potts model that can be fit to data and used to make predictions.</p>
 <dl class="attribute">
 <dt id="fem.discrete.fit.model.degs">
@@ -341,7 +343,7 @@
 </dd></dl>
 
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">fem</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">fem</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">n</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">3</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">fem</span><span class="o">.</span><span class="n">discrete</span><span class="o">.</span><span class="n">time_series</span><span class="p">(</span><span class="n">fem</span><span class="o">.</span><span class="n">discrete</span><span class="o">.</span><span class="n">model_parameters</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">),</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">fem</span><span class="o">.</span><span class="n">discrete</span><span class="o">.</span><span class="n">model</span><span class="p">()</span>
@@ -426,8 +428,8 @@
 </tbody>
 </table>
 <p class="rubric">Examples</p>
-<p>The one-hot encoding of a discrete variable records the state of the variable by a boolean vector with a 1 at the index which is the state of the variable. The one-hot encoding of a system of discrete variables is the concatenation of the one-hot encodings of each variable. For example if the system of discrete variables <span class="math">\((x_1, x_2, x_3)\)</span> has state <span class="math">\((x_1,x_2,x_3)=(1,1,2)\)</span> and the variables may take values from the first <span class="math">\(m=(3,3,4)\)</span> nonnegative integers, i.e. <span class="math">\(x_1,x_2\in\{0,1,2\}\)</span> and <span class="math">\(x_3\in\{0,1,2,3\}\)</span>, then the one-hot encoding of <span class="math">\((x_1, x_2, x_3)^T\)</span> is <span class="math">\(\sigma=(0,1,0,0,1,0,0,0,1,0)^T\)</span>.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fem.discrete</span> <span class="k">import</span> <span class="n">one_hot</span>
+<p>The one-hot encoding of a discrete variable records the state of the variable by a boolean vector with a 1 at the index which is the state of the variable. The one-hot encoding of a system of discrete variables is the concatenation of the one-hot encodings of each variable. For example if the system of discrete variables <span class="math notranslate nohighlight">\((x_1, x_2, x_3)\)</span> has state <span class="math notranslate nohighlight">\((x_1,x_2,x_3)=(1,1,2)\)</span> and the variables may take values from the first <span class="math notranslate nohighlight">\(m=(3,3,4)\)</span> nonnegative integers, i.e. <span class="math notranslate nohighlight">\(x_1,x_2\in\{0,1,2\}\)</span> and <span class="math notranslate nohighlight">\(x_3\in\{0,1,2,3\}\)</span>, then the one-hot encoding of <span class="math notranslate nohighlight">\((x_1, x_2, x_3)^T\)</span> is <span class="math notranslate nohighlight">\(\sigma=(0,1,0,0,1,0,0,0,1,0)^T\)</span>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fem.discrete</span> <span class="k">import</span> <span class="n">one_hot</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x_oh</span> <span class="o">=</span> <span class="n">one_hot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
@@ -456,7 +458,7 @@
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>x</strong> (<em>csc_matrix</em>) – The matrix for which to compute the pseudoinverse</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">If the SVD of <cite>x</cite> is <span class="math">\(USV^T\)</span>, this function returns <span class="math">\(V\)</span>, <span class="math">\(S^+\)</span>, and <span class="math">\(U^T\)</span></td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">If the SVD of <cite>x</cite> is <span class="math notranslate nohighlight">\(USV^T\)</span>, this function returns <span class="math notranslate nohighlight">\(V\)</span>, <span class="math notranslate nohighlight">\(S^+\)</span>, and <span class="math notranslate nohighlight">\(U^T\)</span></td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">(csc_matrix, ndarray, csc_matrix)</td>
 </tr>
@@ -553,7 +555,7 @@
         &copy; Copyright 2018, Joe McKenna.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.5.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.7.9.
       </li>
     </ul>
     </div>

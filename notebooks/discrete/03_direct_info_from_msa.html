@@ -96,12 +96,14 @@
                         title="next chapter">Currency trading strategies</a></p>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -288,7 +290,7 @@ couplings is predictive of contacts in observed 3D conformations of the
 sequence.</p>
 <p>We start by loading the necessary packages and functions. We collect and
 parse MSA data from the <a class="reference external" href="https://pfam.xfam.org/">Pfam database</a> using
-the <code class="docutils literal"><span class="pre">parse_pfam</span></code> function in <a class="reference external" href="../../static/parse_pfam.py">this
+the <code class="docutils literal notranslate"><span class="pre">parse_pfam</span></code> function in <a class="reference external" href="../../static/parse_pfam.py">this
 script</a>. The function downloads the full
 current release of the Pfam database, creates a local directory
 structure with the MSA data for each family and any cross-references
@@ -296,47 +298,47 @@ from sequences in each family to structures in the <a class="reference external"
 Bank</a>, then returns pandas DataFrames that
 detail information about the MSAs and PDB cross-references.</p>
 <p>The MSA and PDB cross-reference data for the protein family/MSA with
-Pfam accession code PFXXXXX are stored in files <code class="docutils literal"><span class="pre">msa.npy</span></code> and
-<code class="docutils literal"><span class="pre">pdb_refs.npy</span></code> (if cross-references are found) in the
-<code class="docutils literal"><span class="pre">Pfam-A.full/PFXXXXX</span></code> subdirectory of <code class="docutils literal"><span class="pre">data_dir</span></code> defined below.</p>
+Pfam accession code PFXXXXX are stored in files <code class="docutils literal notranslate"><span class="pre">msa.npy</span></code> and
+<code class="docutils literal notranslate"><span class="pre">pdb_refs.npy</span></code> (if cross-references are found) in the
+<code class="docutils literal notranslate"><span class="pre">Pfam-A.full/PFXXXXX</span></code> subdirectory of <code class="docutils literal notranslate"><span class="pre">data_dir</span></code> defined below.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
-<span></span>In [1]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython2"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">patches</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">distance_matrix</span>
-<span class="kn">import</span> <span class="nn">fem</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">Bio.PDB</span><span class="o">,</span> <span class="nn">nglview</span><span class="o">,</span> <span class="nn">warnings</span>
-<span class="n">pdb_list</span> <span class="o">=</span> <span class="n">Bio</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBList</span><span class="p">()</span>
-<span class="n">pdb_parser</span> <span class="o">=</span> <span class="n">Bio</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBParser</span><span class="p">()</span>
-<span class="n">data_dir</span> <span class="o">=</span> <span class="s1">&#39;../../../data/msa&#39;</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data_dir</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">parse_pfam</span> <span class="kn">import</span> <span class="n">parse_pfam</span>
-<span class="kn">from</span> <span class="nn">Bio</span> <span class="kn">import</span> <span class="n">BiopythonWarning</span>
-<span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span> <span class="n">BiopythonWarning</span><span class="p">)</span>
-<span class="o">%</span><span class="k">matplotlib</span> inline
-<span class="kn">from</span> <span class="nn">ipymol</span> <span class="kn">import</span> <span class="n">viewer</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-<span class="n">pymol</span> <span class="o">=</span> <span class="n">viewer</span><span class="o">.</span><span class="n">_server</span>
-<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">Image</span>
-</pre></div>
-</div>
-</div>
-<p>Next, we get pandas DataFrames <code class="docutils literal"><span class="pre">pfam</span></code> and <code class="docutils literal"><span class="pre">pdb_refs</span></code> detailing
-information for all protein families in the Pfam database and references
-from MSA sequences to PDB structures.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2"><div class="highlight"><pre>
-<span></span><span class="n">pfam</span><span class="p">,</span> <span class="n">pdb_refs</span> <span class="o">=</span> <span class="n">parse_pfam</span><span class="p">(</span><span class="n">data_dir</span><span class="p">)</span>
-<span class="k">print</span> <span class="s1">&#39;total MSAs: </span><span class="si">%i</span><span class="s1">, total PDB refs: </span><span class="si">%i</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pfam</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pdb_refs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span>import matplotlib.pyplot as plt
+from matplotlib import patches
+import numpy as np
+import pandas as pd
+from scipy.spatial import distance_matrix
+import fem, sys, os, time, Bio.PDB, nglview, warnings
+pdb_list = Bio.PDB.PDBList()
+pdb_parser = Bio.PDB.PDBParser()
+data_dir = &#39;../../../data/msa&#39;
+sys.path.append(data_dir)
+from parse_pfam import parse_pfam
+from Bio import BiopythonWarning
+warnings.simplefilter(&#39;ignore&#39;, BiopythonWarning)
+%matplotlib inline
+from ipymol import viewer
+viewer.start()
+pymol = viewer._server
+from IPython.display import Image
+</pre></div>
+</div>
+</div>
+<p>Next, we get pandas DataFrames <code class="docutils literal notranslate"><span class="pre">pfam</span></code> and <code class="docutils literal notranslate"><span class="pre">pdb_refs</span></code> detailing
+information for all protein families in the Pfam database and references
+from MSA sequences to PDB structures.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span>pfam, pdb_refs = parse_pfam(data_dir)
+print &#39;total MSAs: %i, total PDB refs: %i&#39; % (pfam.shape[0], pdb_refs.shape[0])
 </pre></div>
 </div>
 </div>
@@ -348,26 +350,26 @@ from MSA sequences to PDB structures.</p>
 total MSAs: 16479, total PDB refs: 207746
 </pre></div></div>
 </div>
-<p>Each row in <code class="docutils literal"><span class="pre">pfam</span></code> contains information about a single MSA. The
-columns of <code class="docutils literal"><span class="pre">pfam</span></code> are <code class="docutils literal"><span class="pre">res</span></code>: the number of residues in each sequence
-of the alignment, <code class="docutils literal"><span class="pre">seq</span></code>: the number of sequences in the alignment. Now
-let’s add a column <code class="docutils literal"><span class="pre">size=res*seq</span></code> and sort by that column to see which
+<p>Each row in <code class="docutils literal notranslate"><span class="pre">pfam</span></code> contains information about a single MSA. The
+columns of <code class="docutils literal notranslate"><span class="pre">pfam</span></code> are <code class="docutils literal notranslate"><span class="pre">res</span></code>: the number of residues in each sequence
+of the alignment, <code class="docutils literal notranslate"><span class="pre">seq</span></code>: the number of sequences in the alignment. Now
+let’s add a column <code class="docutils literal notranslate"><span class="pre">size=res*seq</span></code> and sort by that column to see which
 families contain the most data.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
-<span></span>In [3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2"><div class="highlight"><pre>
-<span></span><span class="n">pfam</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pfam</span><span class="p">[</span><span class="s1">&#39;res&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">pfam</span><span class="p">[</span><span class="s1">&#39;seq&#39;</span><span class="p">]</span>
-<span class="n">pfam</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;size&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-<span class="n">pfam</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span>pfam[&#39;size&#39;] = pfam[&#39;res&#39;] * pfam[&#39;seq&#39;]
+pfam.sort_values(by=&#39;size&#39;, ascending=False, inplace=True)
+pfam.head()
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
-<span></span>Out[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[4]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -435,33 +437,33 @@ families contain the most data.</p>
 </table>
 </div></div>
 </div>
-<p>Each row in the PDB references table <code class="docutils literal"><span class="pre">pdb_refs</span></code> contains information
+<p>Each row in the PDB references table <code class="docutils literal notranslate"><span class="pre">pdb_refs</span></code> contains information
 about a cross-reference between a protein family sequence in the Pfam
 database and a protein structure in the PDB database. The columns of the
-table are <code class="docutils literal"><span class="pre">seq</span></code>: the index (starting at 0) of a sequence in the
-protein family, <code class="docutils literal"><span class="pre">uniprot_id</span></code>: the ID of the sequence in the
+table are <code class="docutils literal notranslate"><span class="pre">seq</span></code>: the index (starting at 0) of a sequence in the
+protein family, <code class="docutils literal notranslate"><span class="pre">uniprot_id</span></code>: the ID of the sequence in the
 <a class="reference external" href="https://www.uniprot.org/help/uniprotkb">UniProtKB</a> database,
-<code class="docutils literal"><span class="pre">uniprot_start</span></code>/<code class="docutils literal"><span class="pre">uniprot_end</span></code>: the start and end residue positions
-of the UniProtKB sequence that appears in the MSA, <code class="docutils literal"><span class="pre">pdb_id</span></code>: the PDB
-ID, <code class="docutils literal"><span class="pre">chain</span></code>: the PDB protein structure chain,
-<code class="docutils literal"><span class="pre">pdb_start</span></code>/<code class="docutils literal"><span class="pre">pdb_end</span></code>: the start and end residue positions of the
-PDB sequence that appears in the MSA. Let’s create a column <code class="docutils literal"><span class="pre">res</span></code> that
+<code class="docutils literal notranslate"><span class="pre">uniprot_start</span></code>/<code class="docutils literal notranslate"><span class="pre">uniprot_end</span></code>: the start and end residue positions
+of the UniProtKB sequence that appears in the MSA, <code class="docutils literal notranslate"><span class="pre">pdb_id</span></code>: the PDB
+ID, <code class="docutils literal notranslate"><span class="pre">chain</span></code>: the PDB protein structure chain,
+<code class="docutils literal notranslate"><span class="pre">pdb_start</span></code>/<code class="docutils literal notranslate"><span class="pre">pdb_end</span></code>: the start and end residue positions of the
+PDB sequence that appears in the MSA. Let’s create a column <code class="docutils literal notranslate"><span class="pre">res</span></code> that
 contains the length of the sequence and sort by that column.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
-<span></span>In [4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2"><div class="highlight"><pre>
-<span></span><span class="n">pdb_refs</span><span class="p">[</span><span class="s1">&#39;res&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pdb_refs</span><span class="p">[</span><span class="s1">&#39;pdb_end&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">pdb_refs</span><span class="p">[</span><span class="s1">&#39;pdb_start&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
-<span class="n">pdb_refs</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;res&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-<span class="n">pdb_refs</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span>pdb_refs[&#39;res&#39;] = pdb_refs[&#39;pdb_end&#39;] - pdb_refs[&#39;pdb_start&#39;] + 1
+pdb_refs.sort_values(by=&#39;res&#39;, ascending=False, inplace=True)
+pdb_refs.head()
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
-<span></span>Out[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[5]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -565,38 +567,38 @@ CRISPR-associated endonuclease Cas9. The REC lobe and the NUC lobe of
 Cas9 fold to present a positively charged groove at their interface
 which accommodates the negatively charged sgRNA: target DNA
 heteroduplex. <a class="reference external" href="https://www.ncbi.nlm.nih.gov/pubmed/24529477">[2]</a>
-We’ll isolate the family of interest from the <code class="docutils literal"><span class="pre">pfam</span></code> DataFrame in the
-<code class="docutils literal"><span class="pre">fam</span></code> variable.</p>
+We’ll isolate the family of interest from the <code class="docutils literal notranslate"><span class="pre">pfam</span></code> DataFrame in the
+<code class="docutils literal notranslate"><span class="pre">fam</span></code> variable.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2"><div class="highlight"><pre>
-<span></span><span class="c1"># Cas 9 family accesion code</span>
-<span class="n">ac</span> <span class="o">=</span> <span class="s1">&#39;PF16592&#39;</span>
-<span class="c1"># store the family of interest in the &#39;fam&#39; variable</span>
-<span class="n">fam</span> <span class="o">=</span> <span class="n">pfam</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ac</span><span class="p">]</span>
-<span class="k">print</span> <span class="s1">&#39;size rank: </span><span class="si">%i</span><span class="s1"> of </span><span class="si">%i</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pfam</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">rank</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="bp">False</span><span class="p">)[</span><span class="n">fam</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span> <span class="n">pfam</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span># Cas 9 family accesion code
+ac = &#39;PF16592&#39;
+# store the family of interest in the &#39;fam&#39; variable
+fam = pfam.loc[ac]
+print &#39;size rank: %i of %i&#39; % (pfam[&#39;size&#39;].rank(ascending=False)[fam.name].astype(int), pfam.shape[0])
 
-<span class="c1"># local directory containing data for this MSA</span>
-<span class="n">fam_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="s1">&#39;Pfam-A.full&#39;</span><span class="p">,</span> <span class="n">fam</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-<span class="c1"># the residue symbols array that is the MSA</span>
-<span class="n">msa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fam_dir</span><span class="p">,</span> <span class="s1">&#39;msa.npy&#39;</span><span class="p">))</span>
+# local directory containing data for this MSA
+fam_dir = os.path.join(data_dir, &#39;Pfam-A.full&#39;, fam.name)
+# the residue symbols array that is the MSA
+msa = np.load(os.path.join(fam_dir, &#39;msa.npy&#39;))
 
-<span class="c1"># determine which residues are the same across all sequences, excluding gaps</span>
-<span class="n">aa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">msa</span><span class="p">])</span>
-<span class="n">one_aa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">aa</span><span class="p">])</span>
-<span class="n">two_aa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">aa</span><span class="p">])</span>
-<span class="n">missing_aa_res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;-&#39;</span> <span class="ow">in</span> <span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">aa</span><span class="p">])</span>
-<span class="n">conserved_residues</span> <span class="o">=</span> <span class="n">one_aa</span> <span class="o">|</span> <span class="p">(</span><span class="n">two_aa</span> <span class="o">&amp;</span> <span class="n">missing_aa_res</span><span class="p">)</span>
+# determine which residues are the same across all sequences, excluding gaps
+aa = np.array([np.unique(s) for s in msa])
+one_aa = np.array([len(a) == 1 for a in aa])
+two_aa = np.array([len(a) == 2 for a in aa])
+missing_aa_res = np.array([&#39;-&#39; in a for a in aa])
+conserved_residues = one_aa | (two_aa &amp; missing_aa_res)
 
-<span class="c1"># the number of unique amino acids (or gap symbol) that appear at each residue</span>
-<span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">aa</span><span class="p">])</span>
-<span class="n">m</span> <span class="o">=</span> <span class="n">m</span><span class="p">[</span><span class="o">~</span><span class="n">conserved_residues</span><span class="p">]</span>
-<span class="n">n_residues</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+# the number of unique amino acids (or gap symbol) that appear at each residue
+m = np.array([len(a) for a in aa])
+m = m[~conserved_residues]
+n_residues = m.shape[0]
 
-<span class="n">pfam</span><span class="p">[</span><span class="n">pfam</span><span class="o">.</span><span class="n">index</span> <span class="o">==</span> <span class="n">ac</span><span class="p">]</span>
+pfam[pfam.index == ac]
 </pre></div>
 </div>
 </div>
@@ -609,7 +611,7 @@ size rank: 7142 of 16479
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>Out[5]:
 </pre></div>
 </div>
@@ -653,32 +655,32 @@ size rank: 7142 of 16479
 <p>One can classify a residue from the perspective of the MSA as a
 conserved residue, meaning that in every sequence of the MSA, either a
 gap or the same amino acid is observed. One can also classify a residue
-from the perspective of the sequence as a gap, i.e. an insertion that
+from the perspective of the sequence as a gap, i.e.&nbsp;an insertion that
 Pfam’s aligning algorithm made in the sequence in order to compare like
 residues across sequences. Therefore, each sequence-residue symbol is in
 one of four classes according to whether it is a conserved residue or
 not and where it is a gap or not. We color code each sequence-residue
 symbol for the MSA of interest.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2"><div class="highlight"><pre>
-<span></span><span class="n">code</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">msa</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
-<span class="n">code</span><span class="p">[</span><span class="n">conserved_residues</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
-<span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">msa</span><span class="o">.</span><span class="n">T</span><span class="p">):</span>
-    <span class="n">code</span><span class="p">[</span><span class="n">s</span> <span class="o">==</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span>code = np.zeros(msa.shape, dtype=int)
+code[conserved_residues] = 2
+for j, s in enumerate(msa.T):
+    code[s == &#39;-&#39;, j] += 1
 
-<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;sequence&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;residue&#39;</span><span class="p">)</span>
-<span class="n">cmap</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s1">&#39;plasma&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">matshow</span><span class="p">(</span><span class="n">code</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">)</span>
-<span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;active&#39;</span><span class="p">,</span> <span class="s1">&#39;alignment gap&#39;</span><span class="p">,</span> <span class="s1">&#39;conserved residue&#39;</span><span class="p">,</span> <span class="s1">&#39;alignment gap and conserved residue&#39;</span><span class="p">]</span>
-<span class="n">handles</span> <span class="o">=</span> <span class="p">[</span><span class="n">patches</span><span class="o">.</span><span class="n">Patch</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">cmap</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)]</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="o">=</span><span class="n">handles</span><span class="p">,</span> <span class="n">ncol</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+fig, ax = plt.subplots(1, 1, figsize=(16, 4))
+ax.set_ylabel(&#39;sequence&#39;)
+ax.set_xlabel(&#39;residue&#39;)
+cmap = plt.cm.get_cmap(&#39;plasma&#39;, 4)
+ax.matshow(code.T, aspect=&#39;auto&#39;, cmap=cmap)
+labels = [&#39;active&#39;, &#39;alignment gap&#39;, &#39;conserved residue&#39;, &#39;alignment gap and conserved residue&#39;]
+handles = [patches.Patch(color=cmap(i), label=labels[i]) for i in range(4)]
+plt.legend(handles=handles, ncol=4)
+plt.show()
 </pre></div>
 </div>
 </div>
@@ -691,98 +693,98 @@ symbol for the MSA of interest.</p>
 </div>
 <p>Now, we compute the residue coupling strengths and the direct
 information from the MSA. The MSA is a set of sequences
-<span class="math">\(\text{MSA}=\{s_1,\ldots,s_n\}\)</span> and each nonconserved residue
-<span class="math">\(r_i\)</span>, <span class="math">\(i=1,\ldots,m\)</span>, in the alignment takes</p>
-<div class="math">
+<span class="math notranslate nohighlight">\(\text{MSA}=\{s_1,\ldots,s_n\}\)</span> and each nonconserved residue
+<span class="math notranslate nohighlight">\(r_i\)</span>, <span class="math notranslate nohighlight">\(i=1,\ldots,m\)</span>, in the alignment takes</p>
+<div class="math notranslate nohighlight">
 \[m_i = \left|\{a : r_i=a\text{ for some sequence }s=(r_1,\ldots,r_m)\in\text{MSA}\}\right|\]</div>
 <p>unique empircal values in the alignment. In the following, let
-<span class="math">\(M_i=\sum_{\tilde{i}&lt;i}m_{\tilde{i}}\)</span> for <span class="math">\(i=1,\ldots,m\)</span> and
-let <span class="math">\(e_i\)</span> denote the <span class="math">\(i^{th}\)</span> canonical basis vector of the
+<span class="math notranslate nohighlight">\(M_i=\sum_{\tilde{i}&lt;i}m_{\tilde{i}}\)</span> for <span class="math notranslate nohighlight">\(i=1,\ldots,m\)</span> and
+let <span class="math notranslate nohighlight">\(e_i\)</span> denote the <span class="math notranslate nohighlight">\(i^{th}\)</span> canonical basis vector of the
 shape implied by context.</p>
-<p>We use FEM to infer the couplings <span class="math">\(W\)</span> assuming that the
-probability of residue <span class="math">\(r_i\)</span> being amino acid <span class="math">\(a_k\)</span> for any
-sequence with one-hot encoding <span class="math">\(\sigma\)</span> is given by</p>
-<div class="math">
+<p>We use FEM to infer the couplings <span class="math notranslate nohighlight">\(W\)</span> assuming that the
+probability of residue <span class="math notranslate nohighlight">\(r_i\)</span> being amino acid <span class="math notranslate nohighlight">\(a_k\)</span> for any
+sequence with one-hot encoding <span class="math notranslate nohighlight">\(\sigma\)</span> is given by</p>
+<div class="math notranslate nohighlight">
 \[p(r_i=a_k~|~\{r_1,\ldots,r_n\}\setminus \{r_i\})={\exp e_{M_i+k}^TW\sigma\over\sum_{j=1}^{m_i}\exp e_{M_i+j}^TW\sigma},\quad i=1,\ldots,m,~k=1,\ldots,m_i.\]</div>
 <p>Specifically, we call
-<code class="docutils literal"><span class="pre">fem.discrete.model.fit(msa[~conserved_residues])</span></code> below, where
-<code class="docutils literal"><span class="pre">msa</span></code> is an array of symbols with each row storing residue data and
-each column storing sequence data, to return <span class="math">\(W\)</span> and the running
+<code class="docutils literal notranslate"><span class="pre">fem.discrete.model.fit(msa[~conserved_residues])</span></code> below, where
+<code class="docutils literal notranslate"><span class="pre">msa</span></code> is an array of symbols with each row storing residue data and
+each column storing sequence data, to return <span class="math notranslate nohighlight">\(W\)</span> and the running
 discrepancies from the fit.</p>
-<p>After computing <span class="math">\(W\)</span>, we compute the <em>direct information</em> for each
+<p>After computing <span class="math notranslate nohighlight">\(W\)</span>, we compute the <em>direct information</em> for each
 pair of nonconserved residues. The direct information of residues
-<span class="math">\(r_i\)</span> and <span class="math">\(r_j\)</span> is</p>
-<div class="math">
+<span class="math notranslate nohighlight">\(r_i\)</span> and <span class="math notranslate nohighlight">\(r_j\)</span> is</p>
+<div class="math notranslate nohighlight">
 \[DI(r_i, r_j)=\sum_{k_1=1}^{m_{i_1}}\sum_{k_2=1}^{m_{i_2}} p(r_{i_1}=a_{k_1}, r_{i_2}=a_{k_2}) \ln {p(r_{i_1}=a_{k_1}, r_{i_2}=a_{k_2}) \over p(r_{i_1}=a_{k_1})~p(r_{i_2}=a_{k_2})}\]</div>
 <p>where the joint and marginal probablities are computed over subsequences
-containing only residues <span class="math">\(r_i\)</span> and <span class="math">\(r_j\)</span>:</p>
-<div class="math">
+containing only residues <span class="math notranslate nohighlight">\(r_i\)</span> and <span class="math notranslate nohighlight">\(r_j\)</span>:</p>
+<div class="math notranslate nohighlight">
 \[p(r_{i_1}=a_{k_1}, r_{i_2}=a_{k_2})={\exp e_{M_{i_1}+k_1}^TWe_{M_{i_2}+k_2} \over
 \sum_{j_1=1}^{m_{i_1}}\sum_{j_2=1}^{m_{i_2}}\exp e_{M_{i_1}+j_1}^TWe_{M_{i_2}+j_2}},\]</div>
-<div class="math">
+<div class="math notranslate nohighlight">
 \[p(r_{i_1}=a_{k_1})={\sum_{k_2=1}^{m_{i_2}} p(r_{i_1}=a_{k_1}, r_{i_2}=a_{k_2}) \over \sum_{k_1=1}^{m_{i_1}}\sum_{k_2=1}^{m_{i_2}}p(r_{i_1}=a_{k_1}, r_{i_2}=a_{k_2})},\]</div>
-<p>and <span class="math">\(p(r_{i_2}=a_{k_2})\)</span> is defined similarly.</p>
+<p>and <span class="math notranslate nohighlight">\(p(r_{i_2}=a_{k_2})\)</span> is defined similarly.</p>
 <p>We plot the running discrepancies from the fit and heat maps of
-<span class="math">\(W\)</span> and the direct information below.</p>
+<span class="math notranslate nohighlight">\(W\)</span> and the direct information below.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">direct_information</span><span class="p">(</span><span class="n">msa</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span>def direct_information(msa, cache=True):
 
-    <span class="n">w_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fam_dir</span><span class="p">,</span> <span class="s1">&#39;w.npy&#39;</span><span class="p">)</span>
-    <span class="n">disc_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fam_dir</span><span class="p">,</span> <span class="s1">&#39;disc.npy&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">cache</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">w_file</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">disc_file</span><span class="p">):</span>
-        <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">w_file</span><span class="p">)</span>
-        <span class="n">disc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">disc_file</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">model</span> <span class="o">=</span> <span class="n">fem</span><span class="o">.</span><span class="n">discrete</span><span class="o">.</span><span class="n">model</span><span class="p">()</span>
-        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-        <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">msa</span><span class="p">[</span><span class="o">~</span><span class="n">conserved_residues</span><span class="p">],</span> <span class="n">iters</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-        <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-        <span class="k">print</span> <span class="s1">&#39;fit time: </span><span class="si">%.02f</span><span class="s1"> sec&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">end</span><span class="o">-</span><span class="n">start</span><span class="p">,)</span>
-        <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">w</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-        <span class="n">disc</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">disc</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">w_file</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">disc_file</span><span class="p">,</span> <span class="n">disc</span><span class="p">)</span>
+    w_file = os.path.join(fam_dir, &#39;w.npy&#39;)
+    disc_file = os.path.join(fam_dir, &#39;disc.npy&#39;)
+    if cache and os.path.exists(w_file) and os.path.exists(disc_file):
+        w = np.load(w_file)
+        disc = np.load(disc_file)
+    else:
+        model = fem.discrete.model()
+        start = time.time()
+        model.fit(msa[~conserved_residues], iters=10)
+        end = time.time()
+        print &#39;fit time: %.02f sec&#39; % (end-start,)
+        w = np.hstack(model.w.values())
+        disc = model.disc
+        np.save(w_file, w)
+        np.save(disc_file, disc)
 
-    <span class="n">direct_info_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fam_dir</span><span class="p">,</span> <span class="s1">&#39;direct_info.npy&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">cache</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">direct_info_file</span><span class="p">):</span>
-        <span class="n">direct_info</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">direct_info_file</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">mm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="n">w_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">mm</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">mm</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span><span class="o">.</span><span class="n">T</span>
-        <span class="n">direct_info</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_residues</span><span class="p">,</span> <span class="n">n_residues</span><span class="p">))</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">w_idx</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">jj</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">w_idx</span><span class="p">):</span>
-                <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="n">ii</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">ii</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">jj</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">jj</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
-                <span class="n">pi</span><span class="p">,</span> <span class="n">pj</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">p</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-                <span class="n">p</span> <span class="o">/=</span> <span class="n">p</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-                <span class="n">pi</span> <span class="o">/=</span> <span class="n">pi</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-                <span class="n">pj</span> <span class="o">/=</span> <span class="n">pj</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-                <span class="n">direct_info</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">p</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">pi</span><span class="p">,</span> <span class="n">pj</span><span class="p">)))</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">direct_info_file</span><span class="p">,</span> <span class="n">direct_info</span><span class="p">)</span>
+    direct_info_file = os.path.join(fam_dir, &#39;direct_info.npy&#39;)
+    if cache and os.path.exists(direct_info_file):
+        direct_info = np.load(direct_info_file)
+    else:
+        mm = np.insert(m.cumsum(), 0, 0)
+        w_idx = np.vstack((mm[:-1], mm[1:])).T
+        direct_info = np.zeros((n_residues, n_residues))
+        for i, ii in enumerate(w_idx):
+            for j, jj in enumerate(w_idx):
+                p = np.exp(w[ii[0]:ii[1], jj[0]:jj[1]])
+                pi, pj = p.sum(axis=1), p.sum(axis=0)
+                p /= p.sum()
+                pi /= pi.sum()
+                pj /= pj.sum()
+                direct_info[i,j] = (p*np.log(p/np.outer(pi, pj))).sum()
+        np.save(direct_info_file, direct_info)
 
-    <span class="k">return</span> <span class="n">direct_info</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">disc</span>
+    return direct_info, w, disc
 
-<span class="n">direct_info</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">disc</span> <span class="o">=</span> <span class="n">direct_information</span><span class="p">(</span><span class="n">msa</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+direct_info, w, disc = direct_information(msa, cache=False)
 
-<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
-<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">disc</span><span class="p">:</span>
-    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s1">&#39;k-&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;iteration&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;discrepancy&#39;</span><span class="p">)</span>
-<span class="n">scale</span> <span class="o">=</span> <span class="mf">1e-1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">w</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">matshow</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;seismic&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="n">scale</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">scale</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Pfam: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fam</span><span class="o">.</span><span class="n">name</span><span class="p">,))</span>
-<span class="n">scale</span> <span class="o">=</span> <span class="mf">1e-1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">direct_info</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">matshow</span><span class="p">(</span><span class="n">direct_info</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;seismic&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">scale</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;direct info&#39;</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
-    <span class="n">a</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+fig, ax = plt.subplots(1, 3, figsize=(12,4))
+for d in disc:
+    ax[0].plot(d, &#39;k-&#39;, lw=0.1)
+ax[0].set_xlabel(&#39;iteration&#39;)
+ax[0].set_ylabel(&#39;discrepancy&#39;)
+scale = 1e-1 * np.abs(w).max()
+ax[1].matshow(w, cmap=&#39;seismic&#39;, vmin=-scale, vmax=scale)
+ax[1].set_title(&#39;Pfam: %s&#39; % (fam.name,))
+scale = 1e-1 * np.abs(direct_info).max()
+ax[2].matshow(direct_info, cmap=&#39;seismic&#39;, vmin=0, vmax=scale)
+ax[2].set_title(&#39;direct info&#39;)
+for a in ax[1:]:
+    a.axis(&#39;off&#39;)
+plt.show()
 </pre></div>
 </div>
 </div>
@@ -804,21 +806,21 @@ fit time: 18.00 sec
 <p>Next, we examine the extent to direct information is predictive of
 residue contacts of the 3D conformations of sequences in the MSA.
 Several sequences in this family contain cross-references to PDB
-structures. We’ll isolate these references from the <code class="docutils literal"><span class="pre">pdb_refs</span></code>
-DataFrame in the <code class="docutils literal"><span class="pre">refs</span></code> variable.</p>
+structures. We’ll isolate these references from the <code class="docutils literal notranslate"><span class="pre">pdb_refs</span></code>
+DataFrame in the <code class="docutils literal notranslate"><span class="pre">refs</span></code> variable.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2"><div class="highlight"><pre>
-<span></span><span class="n">refs</span> <span class="o">=</span> <span class="n">pdb_refs</span><span class="p">[</span><span class="n">pdb_refs</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">fam</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span>
-<span class="n">refs</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span>refs = pdb_refs[pdb_refs.index.str.contains(fam.name)]
+refs.head()
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>Out[8]:
 </pre></div>
 </div>
@@ -925,58 +927,58 @@ is a binary image where a pixel value is 1 if the corresponding pair of
 residues is less than a distance threshold (we use 10 angstroms below)
 and 0 otherwise.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">contact_map</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">dist_thresh</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
-    <span class="n">seq</span> <span class="o">=</span> <span class="n">msa</span><span class="p">[:,</span><span class="n">ref</span><span class="o">.</span><span class="n">seq</span><span class="p">]</span>
-    <span class="n">pdb_file</span> <span class="o">=</span> <span class="n">pdb_list</span><span class="o">.</span><span class="n">retrieve_pdb_file</span><span class="p">(</span><span class="n">ref</span><span class="o">.</span><span class="n">pdb_id</span><span class="p">,</span> <span class="n">pdir</span><span class="o">=</span><span class="n">fam_dir</span><span class="p">,</span> <span class="n">file_format</span><span class="o">=</span><span class="s1">&#39;pdb&#39;</span><span class="p">)</span>
-    <span class="n">chain</span> <span class="o">=</span> <span class="n">pdb_parser</span><span class="o">.</span><span class="n">get_structure</span><span class="p">(</span><span class="n">ref</span><span class="o">.</span><span class="n">pdb_id</span><span class="p">,</span> <span class="n">pdb_file</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="n">ref</span><span class="o">.</span><span class="n">chain</span><span class="p">]</span>
-    <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">a</span><span class="o">.</span><span class="n">get_coord</span><span class="p">()</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">chain</span><span class="o">.</span><span class="n">get_atoms</span><span class="p">()])</span>
-    <span class="n">coords</span> <span class="o">=</span> <span class="n">coords</span><span class="p">[</span><span class="n">ref</span><span class="o">.</span><span class="n">pdb_start</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="n">ref</span><span class="o">.</span><span class="n">pdb_end</span><span class="p">]</span>
-    <span class="n">missing_aa_seq</span> <span class="o">=</span> <span class="n">seq</span> <span class="o">==</span> <span class="s1">&#39;-&#39;</span>
-    <span class="n">coords</span> <span class="o">=</span> <span class="n">coords</span><span class="p">[</span><span class="o">~</span><span class="n">conserved_residues</span><span class="p">[</span><span class="o">~</span><span class="n">missing_aa_seq</span><span class="p">]]</span>
-    <span class="k">return</span> <span class="n">distance_matrix</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="n">coords</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">dist_thresh</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span>def contact_map(ref, dist_thresh=10):
+    seq = msa[:,ref.seq]
+    pdb_file = pdb_list.retrieve_pdb_file(ref.pdb_id, pdir=fam_dir, file_format=&#39;pdb&#39;)
+    chain = pdb_parser.get_structure(ref.pdb_id, pdb_file)[0][ref.chain]
+    coords = np.array([a.get_coord() for a in chain.get_atoms()])
+    coords = coords[ref.pdb_start-1:ref.pdb_end]
+    missing_aa_seq = seq == &#39;-&#39;
+    coords = coords[~conserved_residues[~missing_aa_seq]]
+    return distance_matrix(coords, coords) &lt; dist_thresh
 
-<span class="k">def</span> <span class="nf">predict_contacts</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">direct_info</span><span class="p">,</span> <span class="n">top</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
-    <span class="n">missing_aa_seq</span> <span class="o">=</span> <span class="n">seq</span> <span class="o">==</span> <span class="s1">&#39;-&#39;</span>
-    <span class="n">di_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">((</span><span class="o">~</span><span class="n">conserved_residues</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
-    <span class="n">di_idx</span> <span class="o">=</span> <span class="n">di_idx</span><span class="p">[</span><span class="o">~</span><span class="n">missing_aa_seq</span><span class="p">[</span><span class="o">~</span><span class="n">conserved_residues</span><span class="p">]]</span>
-    <span class="n">di</span> <span class="o">=</span> <span class="n">direct_info</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">(</span><span class="n">di_idx</span><span class="p">,</span> <span class="n">di_idx</span><span class="p">)]</span>
-    <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">triu</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">di</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">),</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
-    <span class="n">thresh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">di</span><span class="p">)[</span><span class="n">mask</span><span class="p">])[</span><span class="o">-</span><span class="n">top</span><span class="p">]</span>
-    <span class="n">di</span><span class="p">[</span><span class="o">~</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">predicted_contacts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">di</span> <span class="o">&gt;=</span> <span class="n">thresh</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">predicted_contacts</span>
+def predict_contacts(seq, direct_info, top, k=2):
+    missing_aa_seq = seq == &#39;-&#39;
+    di_idx = np.arange((~conserved_residues).sum())
+    di_idx = di_idx[~missing_aa_seq[~conserved_residues]]
+    di = direct_info[np.ix_(di_idx, di_idx)]
+    mask = np.triu(np.ones(di.shape[0], dtype=bool), k=k)
+    thresh = np.sort(np.abs(di)[mask])[-top]
+    di[~mask] = 0
+    predicted_contacts = np.where(di &gt;= thresh)
+    return predicted_contacts
 
-<span class="n">top</span> <span class="o">=</span> <span class="mi">20</span>
-<span class="n">max_tp</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="n">best_ref</span> <span class="o">=</span> <span class="n">refs</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+top = 20
+max_tp = 0
+best_ref = refs.iloc[0]
 
-<span class="n">n_refs</span> <span class="o">=</span> <span class="n">refs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">r</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="p">(</span><span class="n">n_refs</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mf">4.</span><span class="p">),</span> <span class="mi">4</span>
-<span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">3</span><span class="o">*</span><span class="n">r</span>
-<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="n">w</span><span class="p">,</span><span class="n">h</span><span class="p">))</span>
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">refs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-    <span class="n">ref</span> <span class="o">=</span> <span class="n">refs</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-    <span class="n">seq</span> <span class="o">=</span> <span class="n">msa</span><span class="p">[:,</span> <span class="n">ref</span><span class="o">.</span><span class="n">seq</span><span class="p">]</span>
-    <span class="n">contacts</span> <span class="o">=</span> <span class="n">contact_map</span><span class="p">(</span><span class="n">ref</span><span class="p">)</span>
-    <span class="n">predicted_contacts</span> <span class="o">=</span> <span class="n">predict_contacts</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">direct_info</span><span class="p">,</span> <span class="n">top</span><span class="p">)</span>
-    <span class="n">tp</span> <span class="o">=</span> <span class="n">contacts</span><span class="p">[</span><span class="n">predicted_contacts</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">tp</span> <span class="o">&gt;</span> <span class="n">max_tp</span><span class="p">:</span>
-        <span class="n">max_tp</span> <span class="o">=</span> <span class="n">tp</span>
-        <span class="n">best_ref</span> <span class="o">=</span> <span class="n">ref</span>
+n_refs = refs.shape[0]
+r, c = int(1+(n_refs-1)/4.), 4
+w, h = 12, 3*r
+fig = plt.figure(figsize=(w,h))
+for i in range(refs.shape[0]):
+    ref = refs.iloc[i]
+    seq = msa[:, ref.seq]
+    contacts = contact_map(ref)
+    predicted_contacts = predict_contacts(seq, direct_info, top)
+    tp = contacts[predicted_contacts].sum()
+    if tp &gt; max_tp:
+        max_tp = tp
+        best_ref = ref
 
-    <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">matshow</span><span class="p">(</span><span class="n">contacts</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Greys&#39;</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="n">predicted_contacts</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s%s</span><span class="s1">, </span><span class="si">%i</span><span class="s1">-</span><span class="si">%i</span><span class="s1"> (</span><span class="si">%02.0f%%</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ref</span><span class="o">.</span><span class="n">pdb_id</span><span class="p">,</span> <span class="n">ref</span><span class="o">.</span><span class="n">chain</span><span class="p">,</span> <span class="n">ref</span><span class="o">.</span><span class="n">pdb_start</span><span class="p">,</span> <span class="n">ref</span><span class="o">.</span><span class="n">pdb_end</span><span class="p">,</span> <span class="mf">100.</span><span class="o">*</span><span class="n">tp</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">top</span><span class="p">)))</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+    ax = fig.add_subplot(r, c, i+1)
+    ax.matshow(contacts, cmap=&#39;Greys&#39;, aspect=&#39;auto&#39;)
+    ax.scatter(*predicted_contacts[::-1], c=&#39;r&#39;)
+    ax.set_title(&#39;%s%s, %i-%i (%02.0f%%)&#39; % (ref.pdb_id, ref.chain, ref.pdb_start, ref.pdb_end, 100.*tp/float(top)))
+    ax.axis(&#39;off&#39;)
 
-<span class="n">plt</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s1">&#39;top </span><span class="si">%i</span><span class="s1"> contact predictions&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">top</span><span class="p">,))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+plt.suptitle(&#39;top %i contact predictions&#39; % (top,))
+plt.show()
 </pre></div>
 </div>
 </div>
@@ -1013,35 +1015,35 @@ Structure exists: &#39;../../../data/msa/Pfam-A.full/PF16592/pdb4zt9.ent&#39;
 <p>For the PDB with the most correctly predicted contacts, we visualize the
 greatest direct information pairs on the PDB structure.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2"><div class="highlight"><pre>
-<span></span><span class="n">ref</span> <span class="o">=</span> <span class="n">best_ref</span>
-<span class="n">seq</span> <span class="o">=</span> <span class="n">msa</span><span class="p">[:,</span> <span class="n">ref</span><span class="o">.</span><span class="n">seq</span><span class="p">]</span>
-<span class="n">predicted_contacts</span> <span class="o">=</span> <span class="n">predict_contacts</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">direct_info</span><span class="p">,</span> <span class="n">top</span><span class="p">)</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span>ref = best_ref
+seq = msa[:, ref.seq]
+predicted_contacts = predict_contacts(seq, direct_info, top)
 
-<span class="n">missing_aa_seq</span> <span class="o">=</span> <span class="n">seq</span> <span class="o">==</span> <span class="s1">&#39;-&#39;</span>
-<span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">ref</span><span class="o">.</span><span class="n">pdb_start</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">ref</span><span class="o">.</span><span class="n">pdb_end</span><span class="p">)</span>
-<span class="n">res</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="o">~</span><span class="n">conserved_residues</span><span class="p">[</span><span class="o">~</span><span class="n">missing_aa_seq</span><span class="p">]]</span>
-<span class="n">res</span> <span class="o">=</span> <span class="p">[</span><span class="n">res</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">predicted_contacts</span><span class="p">]</span>
+missing_aa_seq = seq == &#39;-&#39;
+res = np.arange(ref.pdb_start-1, ref.pdb_end)
+res = res[~conserved_residues[~missing_aa_seq]]
+res = [res[i] for i in predicted_contacts]
 
-<span class="n">pdb_file</span> <span class="o">=</span> <span class="n">pdb_list</span><span class="o">.</span><span class="n">retrieve_pdb_file</span><span class="p">(</span><span class="n">ref</span><span class="o">.</span><span class="n">pdb_id</span><span class="p">,</span> <span class="n">pdir</span><span class="o">=</span><span class="n">fam_dir</span><span class="p">,</span> <span class="n">file_format</span><span class="o">=</span><span class="s1">&#39;pdb&#39;</span><span class="p">)</span>
-<span class="n">chain</span> <span class="o">=</span> <span class="n">pdb_parser</span><span class="o">.</span><span class="n">get_structure</span><span class="p">(</span><span class="n">ref</span><span class="o">.</span><span class="n">pdb_id</span><span class="p">,</span> <span class="n">pdb_file</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="n">ref</span><span class="o">.</span><span class="n">chain</span><span class="p">]</span>
-<span class="n">pdb_res</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">get_id</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">chain</span><span class="o">.</span><span class="n">get_residues</span><span class="p">()]</span>
+pdb_file = pdb_list.retrieve_pdb_file(ref.pdb_id, pdir=fam_dir, file_format=&#39;pdb&#39;)
+chain = pdb_parser.get_structure(ref.pdb_id, pdb_file)[0][ref.chain]
+pdb_res = [r.get_id()[1] for r in chain.get_residues()]
 
-<span class="n">view</span> <span class="o">=</span> <span class="n">nglview</span><span class="o">.</span><span class="n">show_biopython</span><span class="p">(</span><span class="n">chain</span><span class="p">)</span>
-<span class="n">colors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;0xFFFFFF&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">chain</span><span class="p">))</span>
-<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pdb_res</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
-        <span class="n">colors</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0xFF0000&#39;</span>
-    <span class="k">elif</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
-        <span class="n">colors</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0x00FF00&#39;</span>
-<span class="n">colors</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">colors</span><span class="p">)</span>
-<span class="n">view</span><span class="o">.</span><span class="n">_set_color_by_residue</span><span class="p">(</span><span class="n">colors</span><span class="p">)</span>
-<span class="n">view</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
-<span class="n">view</span>
+view = nglview.show_biopython(chain)
+colors = np.array([&#39;0xFFFFFF&#39;] * len(chain))
+for i, r in enumerate(pdb_res):
+    if r in res[0]:
+        colors[i] = &#39;0xFF0000&#39;
+    elif r in res[1]:
+        colors[i] = &#39;0x00FF00&#39;
+colors = list(colors)
+view._set_color_by_residue(colors)
+view.display()
+view
 </pre></div>
 </div>
 </div>
@@ -1060,50 +1062,50 @@ Structure exists: &#39;../../../data/msa/Pfam-A.full/PF16592/pdb5b2t.ent&#39;
 <script type="application/vnd.jupyter.widget-view+json">{"model_id": "1e5ae532dd064017b00d7ccd24b6eb51", "version_minor": 0, "version_major": 2}</script></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [19]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">plot_pdb</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">res</span><span class="p">):</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span>def plot_pdb(ref, res):
 
-    <span class="n">pymol</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">ref</span><span class="o">.</span><span class="n">pdb_id</span><span class="p">)</span>
-    <span class="n">pymol</span><span class="o">.</span><span class="n">color</span><span class="p">(</span><span class="s1">&#39;white&#39;</span><span class="p">)</span>
+    pymol.fetch(ref.pdb_id)
+    pymol.color(&#39;white&#39;)
 
-    <span class="k">for</span> <span class="n">r1</span><span class="p">,</span> <span class="n">r2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
-        <span class="n">s1</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">/</span><span class="si">%i</span><span class="s1">/CA&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ref</span><span class="o">.</span><span class="n">chain</span><span class="p">,</span> <span class="n">r1</span><span class="p">)</span>
-        <span class="n">s2</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">/</span><span class="si">%i</span><span class="s1">/CA&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ref</span><span class="o">.</span><span class="n">chain</span><span class="p">,</span> <span class="n">r2</span><span class="p">)</span>
-        <span class="n">pymol</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">)</span>
+    for r1, r2 in zip(res[0], res[1]):
+        s1 = &#39;%s/%i/CA&#39; % (ref.chain, r1)
+        s2 = &#39;%s/%i/CA&#39; % (ref.chain, r2)
+        pymol.distance(s1, s2)
 
-    <span class="n">pymol</span><span class="o">.</span><span class="n">orient</span><span class="p">()</span>
-    <span class="n">pymol</span><span class="o">.</span><span class="n">hide</span><span class="p">(</span><span class="s1">&#39;labels&#39;</span><span class="p">)</span>
-    <span class="n">pymol</span><span class="o">.</span><span class="n">ray</span><span class="p">()</span>
-    <span class="n">pymol</span><span class="o">.</span><span class="n">png</span><span class="p">(</span><span class="n">ref</span><span class="o">.</span><span class="n">pdb_id</span><span class="p">)</span>
+    pymol.orient()
+    pymol.hide(&#39;labels&#39;)
+    pymol.ray()
+    pymol.png(ref.pdb_id)
 
-    <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.png&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ref</span><span class="o">.</span><span class="n">pdb_id</span><span class="p">,)</span>
+    return &#39;%s.png&#39; % (ref.pdb_id,)
 
-<span class="n">ref</span> <span class="o">=</span> <span class="n">best_ref</span>
-<span class="n">seq</span> <span class="o">=</span> <span class="n">msa</span><span class="p">[:,</span> <span class="n">ref</span><span class="o">.</span><span class="n">seq</span><span class="p">]</span>
-<span class="n">predicted_contacts</span> <span class="o">=</span> <span class="n">predict_contacts</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">direct_info</span><span class="p">,</span> <span class="n">top</span><span class="p">)</span>
+ref = best_ref
+seq = msa[:, ref.seq]
+predicted_contacts = predict_contacts(seq, direct_info, top)
 
-<span class="n">missing_aa_seq</span> <span class="o">=</span> <span class="n">seq</span> <span class="o">==</span> <span class="s1">&#39;-&#39;</span>
-<span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">ref</span><span class="o">.</span><span class="n">pdb_start</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">ref</span><span class="o">.</span><span class="n">pdb_end</span><span class="p">)</span>
-<span class="n">res</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="o">~</span><span class="n">conserved_residues</span><span class="p">[</span><span class="o">~</span><span class="n">missing_aa_seq</span><span class="p">]]</span>
-<span class="n">res</span> <span class="o">=</span> <span class="p">[</span><span class="n">res</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">predicted_contacts</span><span class="p">]</span>
+missing_aa_seq = seq == &#39;-&#39;
+res = np.arange(ref.pdb_start-1, ref.pdb_end)
+res = res[~conserved_residues[~missing_aa_seq]]
+res = [res[i] for i in predicted_contacts]
 
-<span class="c1"># pymol.set(&#39;fetch_type_default&#39;, &#39;pdb1&#39;)</span>
-<span class="n">pymol</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;distance&#39;</span><span class="p">)</span>
-<span class="n">pymol</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;dash_gap&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-<span class="n">pymol</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;dash_radius&#39;</span><span class="p">,</span> <span class="mf">0.35</span><span class="p">)</span>
-<span class="n">pymol</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;dash_color&#39;</span><span class="p">,</span> <span class="s1">&#39;red&#39;</span><span class="p">)</span>
+# pymol.set(&#39;fetch_type_default&#39;, &#39;pdb1&#39;)
+pymol.set(&#39;distance&#39;)
+pymol.set(&#39;dash_gap&#39;, 0)
+pymol.set(&#39;dash_radius&#39;, 0.35)
+pymol.set(&#39;dash_color&#39;, &#39;red&#39;)
 
-<span class="n">pdb_image</span> <span class="o">=</span> <span class="n">plot_pdb</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span>
-<span class="n">Image</span><span class="p">(</span><span class="n">pdb_image</span><span class="p">)</span>
+pdb_image = plot_pdb(ref, res)
+Image(pdb_image)
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>Out[19]:
 </pre></div>
 </div>
@@ -1114,46 +1116,46 @@ Structure exists: &#39;../../../data/msa/Pfam-A.full/PF16592/pdb5b2t.ent&#39;
 <p>To further assess the extent to which direct information is predictive
 of protein contacts, we compute the receiver operating characteristic
 (ROC) curve that results from varying the number of predicted contacts.
-The ROC curve is the true positive rate, i.e. the number of correctly
+The ROC curve is the true positive rate, i.e.&nbsp;the number of correctly
 predicted contacts divided by the total number of contacts, versus the
-false positive rate, i.e. the number of incorrectly predicted contacts
+false positive rate, i.e.&nbsp;the number of incorrectly predicted contacts
 divided by the total number of noncontacting residue pairs. A perfect
 binary classifier has an area under the ROC curve equal to 1.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [20]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">roc</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
-    <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">triu</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">di</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">),</span> <span class="n">k</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">order</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span><span class="o">.</span><span class="n">argsort</span><span class="p">()[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">c_flat</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="n">mask</span><span class="p">][</span><span class="n">order</span><span class="p">]</span>
-    <span class="n">tp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">c_flat</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-    <span class="n">fp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="o">~</span><span class="n">c_flat</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-    <span class="n">tp</span> <span class="o">/=</span> <span class="n">tp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">fp</span> <span class="o">/=</span> <span class="n">fp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">fp</span><span class="p">,</span> <span class="n">tp</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span>def roc(x, c):
+    mask = np.triu(np.ones(di.shape[0], dtype=bool), k=2)
+    order = x[mask].argsort()[::-1]
+    c_flat = c[mask][order]
+    tp = np.cumsum(c_flat, dtype=float)
+    fp = np.cumsum(~c_flat, dtype=float)
+    tp /= tp[-1]
+    fp /= fp[-1]
+    return fp, tp
 
-<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">refs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-    <span class="n">ref</span> <span class="o">=</span> <span class="n">refs</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-    <span class="n">seq</span> <span class="o">=</span> <span class="n">msa</span><span class="p">[:,</span> <span class="n">ref</span><span class="o">.</span><span class="n">seq</span><span class="p">]</span>
-    <span class="n">missing_aa_seq</span> <span class="o">=</span> <span class="n">seq</span> <span class="o">==</span> <span class="s1">&#39;-&#39;</span>
-    <span class="n">di_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">((</span><span class="o">~</span><span class="n">conserved_residues</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
-    <span class="n">di_idx</span> <span class="o">=</span> <span class="n">di_idx</span><span class="p">[</span><span class="o">~</span><span class="n">missing_aa_seq</span><span class="p">[</span><span class="o">~</span><span class="n">conserved_residues</span><span class="p">]]</span>
-    <span class="n">di</span> <span class="o">=</span> <span class="n">direct_info</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">(</span><span class="n">di_idx</span><span class="p">,</span> <span class="n">di_idx</span><span class="p">)]</span>
-    <span class="n">contacts</span> <span class="o">=</span> <span class="n">contact_map</span><span class="p">(</span><span class="n">ref</span><span class="p">)</span>
-    <span class="n">fp</span><span class="p">,</span> <span class="n">tp</span> <span class="o">=</span> <span class="n">roc</span><span class="p">(</span><span class="n">di</span><span class="p">,</span> <span class="n">contacts</span><span class="p">)</span>
-    <span class="n">auc</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">tp</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">tp</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%s%s</span><span class="s1">, </span><span class="si">%i</span><span class="s1">-</span><span class="si">%i</span><span class="s1">, AUC: </span><span class="si">%.02f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ref</span><span class="o">.</span><span class="n">pdb_id</span><span class="p">,</span> <span class="n">ref</span><span class="o">.</span><span class="n">chain</span><span class="p">,</span> <span class="n">ref</span><span class="o">.</span><span class="n">pdb_start</span><span class="p">,</span> <span class="n">ref</span><span class="o">.</span><span class="n">pdb_end</span><span class="p">,</span> <span class="n">auc</span><span class="p">))</span>
+fig, ax = plt.subplots(1, 1, figsize=(8, 8))
+for i in range(refs.shape[0]):
+    ref = refs.iloc[i]
+    seq = msa[:, ref.seq]
+    missing_aa_seq = seq == &#39;-&#39;
+    di_idx = np.arange((~conserved_residues).sum())
+    di_idx = di_idx[~missing_aa_seq[~conserved_residues]]
+    di = direct_info[np.ix_(di_idx, di_idx)]
+    contacts = contact_map(ref)
+    fp, tp = roc(di, contacts)
+    auc = tp.sum() / tp.shape[0]
+    ax.plot(fp, tp, label=&#39;%s%s, %i-%i, AUC: %.02f&#39; % (ref.pdb_id, ref.chain, ref.pdb_start, ref.pdb_end, auc))
 
-<span class="n">grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="s1">&#39;r--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;false positive rate&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;true positive rate&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+grid = np.linspace(0, 1)
+ax.plot(grid, grid, &#39;r--&#39;, lw=1)
+ax.set_xlabel(&#39;false positive rate&#39;)
+ax.set_ylabel(&#39;true positive rate&#39;)
+plt.legend()
+plt.show()
 </pre></div>
 </div>
 </div>
@@ -1210,7 +1212,7 @@ Structure exists: &#39;../../../data/msa/Pfam-A.full/PF16592/pdb4zt9.ent&#39;
         &copy; Copyright 2018, Joe McKenna.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.7.9.
       </li>
     </ul>
     </div>

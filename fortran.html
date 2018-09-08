@@ -86,12 +86,14 @@
                         title="previous chapter">fem.discrete package</a></p>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -112,7 +114,7 @@ $ use omp_lib</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Routines:</th><td class="field-body"><a class="reference internal" href="#f/fortran_module/simulate_time_series" title="f/fortran_module/simulate_time_series"><code class="xref f f-func docutils literal"><span class="pre">simulate_time_series()</span></code></a>, <a class="reference internal" href="#f/fortran_module/simulate_mutations" title="f/fortran_module/simulate_mutations"><code class="xref f f-func docutils literal"><span class="pre">simulate_mutations()</span></code></a>, <a class="reference internal" href="#f/fortran_module/continuous_fit_i" title="f/fortran_module/continuous_fit_i"><code class="xref f f-func docutils literal"><span class="pre">continuous_fit_i()</span></code></a>, <a class="reference internal" href="#f/fortran_module/discrete_fit_i" title="f/fortran_module/discrete_fit_i"><code class="xref f f-func docutils literal"><span class="pre">discrete_fit_i()</span></code></a>, <a class="reference internal" href="#f/fortran_module/multiindices" title="f/fortran_module/multiindices"><code class="xref f f-func docutils literal"><span class="pre">multiindices()</span></code></a>, <a class="reference internal" href="#f/fortran_module/continuous_fit" title="f/fortran_module/continuous_fit"><code class="xref f f-func docutils literal"><span class="pre">continuous_fit()</span></code></a>, <a class="reference internal" href="#f/fortran_module/discrete_fit" title="f/fortran_module/discrete_fit"><code class="xref f f-func docutils literal"><span class="pre">discrete_fit()</span></code></a>, <a class="reference internal" href="#f/fortran_module/num_threads" title="f/fortran_module/num_threads"><code class="xref f f-func docutils literal"><span class="pre">num_threads()</span></code></a></td>
+<tr class="field-odd field"><th class="field-name">Routines:</th><td class="field-body"><a class="reference internal" href="#f/fortran_module/simulate_time_series" title="f/fortran_module/simulate_time_series"><code class="xref f f-func docutils literal notranslate"><span class="pre">simulate_time_series()</span></code></a>, <a class="reference internal" href="#f/fortran_module/simulate_mutations" title="f/fortran_module/simulate_mutations"><code class="xref f f-func docutils literal notranslate"><span class="pre">simulate_mutations()</span></code></a>, <a class="reference internal" href="#f/fortran_module/continuous_fit_i" title="f/fortran_module/continuous_fit_i"><code class="xref f f-func docutils literal notranslate"><span class="pre">continuous_fit_i()</span></code></a>, <a class="reference internal" href="#f/fortran_module/discrete_fit_i" title="f/fortran_module/discrete_fit_i"><code class="xref f f-func docutils literal notranslate"><span class="pre">discrete_fit_i()</span></code></a>, <a class="reference internal" href="#f/fortran_module/multiindices" title="f/fortran_module/multiindices"><code class="xref f f-func docutils literal notranslate"><span class="pre">multiindices()</span></code></a>, <a class="reference internal" href="#f/fortran_module/continuous_fit" title="f/fortran_module/continuous_fit"><code class="xref f f-func docutils literal notranslate"><span class="pre">continuous_fit()</span></code></a>, <a class="reference internal" href="#f/fortran_module/discrete_fit" title="f/fortran_module/discrete_fit"><code class="xref f f-func docutils literal notranslate"><span class="pre">discrete_fit()</span></code></a>, <a class="reference internal" href="#f/fortran_module/num_threads" title="f/fortran_module/num_threads"><code class="xref f f-func docutils literal notranslate"><span class="pre">num_threads()</span></code></a></td>
 </tr>
 </tbody>
 </table>
@@ -141,11 +143,15 @@ then OpenMP is not installed or not properly configured</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>n</strong><em> [</em><em>integer</em><em>,</em><em>in,</em><em>]</em></li>
+<tr class="field-odd field"><th class="field-name">Options:</th><td class="field-body"><ul class="first simple">
+<li><strong>n</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(m)</em><em>]</em></li>
+<li><strong>n_deg</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=len(degs)</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>m</strong> (n)<em> [</em><em>integer</em><em>,</em><em>in</em><em>]</em></li>
 <li><strong>degs</strong> (n_deg)<em> [</em><em>integer</em><em>,</em><em>in</em><em>]</em></li>
-<li><strong>n_deg</strong><em> [</em><em>integer</em><em>,</em><em>in,</em><em>]</em></li>
 <li><strong>n_idx</strong><em> [</em><em>integer</em><em>,</em><em>in</em><em>]</em></li>
 <li><strong>n_idx_by_deg</strong> (n_deg)<em> [</em><em>integer</em><em>,</em><em>in</em><em>]</em></li>
 <li><strong>idx_ptr</strong> (*)<em> [</em><em>integer</em><em>,</em><em>out</em><em>]</em></li>
@@ -154,7 +160,7 @@ then OpenMP is not installed or not properly configured</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Called from:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/fortran_module/simulate_time_series" title="f/fortran_module/simulate_time_series"><code class="xref f f-func docutils literal"><span class="pre">simulate_time_series()</span></code></a>, <a class="reference internal" href="#f/fortran_module/simulate_mutations" title="f/fortran_module/simulate_mutations"><code class="xref f f-func docutils literal"><span class="pre">simulate_mutations()</span></code></a></p>
+<tr class="field-odd field"><th class="field-name">Called from:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/fortran_module/simulate_time_series" title="f/fortran_module/simulate_time_series"><code class="xref f f-func docutils literal notranslate"><span class="pre">simulate_time_series()</span></code></a>, <a class="reference internal" href="#f/fortran_module/simulate_mutations" title="f/fortran_module/simulate_mutations"><code class="xref f f-func docutils literal notranslate"><span class="pre">simulate_mutations()</span></code></a></p>
 </td>
 </tr>
 </tbody>
@@ -171,18 +177,22 @@ then OpenMP is not installed or not properly configured</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>w</strong> (m_sum,n_s)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
-<li><strong>m_sum</strong><em> [</em><em>integer</em><em>,</em><em>hide/in,</em><em>]</em></li>
-<li><strong>n_s</strong><em> [</em><em>integer</em><em>,</em><em>hide/in,</em><em>]</em></li>
-<li><strong>n</strong><em> [</em><em>integer</em><em>,</em><em>hide/in,</em><em>]</em></li>
 <li><strong>m</strong> (n)<em> [</em><em>integer</em><em>,</em><em>in</em><em>]</em></li>
 <li><strong>l</strong><em> [</em><em>integer</em><em>,</em><em>in</em><em>]</em></li>
 <li><strong>degs</strong> (n_deg)<em> [</em><em>integer</em><em>,</em><em>in</em><em>]</em></li>
-<li><strong>n_deg</strong><em> [</em><em>integer</em><em>,</em><em>hide/in,</em><em>]</em></li>
 <li><strong>x</strong> (n,l)<em> [</em><em>integer</em><em>,</em><em>out</em><em>]</em></li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Call to:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/fortran_module/multiindices" title="f/fortran_module/multiindices"><code class="xref f f-func docutils literal"><span class="pre">multiindices()</span></code></a></p>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first simple">
+<li><strong>m_sum</strong><em> [</em><em>integer</em><em>,</em><em>hide/in,optional/default=shape(w,0)</em><em>]</em></li>
+<li><strong>n_s</strong><em> [</em><em>integer</em><em>,</em><em>hide/in,optional/default=shape(w,1)</em><em>]</em></li>
+<li><strong>n</strong><em> [</em><em>integer</em><em>,</em><em>hide/in,optional/default=len(m)</em><em>]</em></li>
+<li><strong>n_deg</strong><em> [</em><em>integer</em><em>,</em><em>hide/in,optional/default=len(degs)</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Call to:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/fortran_module/multiindices" title="f/fortran_module/multiindices"><code class="xref f f-func docutils literal notranslate"><span class="pre">multiindices()</span></code></a></p>
 </td>
 </tr>
 </tbody>
@@ -199,19 +209,23 @@ then OpenMP is not installed or not properly configured</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>w</strong> (m_sum,n_s)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
-<li><strong>m_sum</strong><em> [</em><em>integer</em><em>,</em><em>hide/in,</em><em>]</em></li>
-<li><strong>n_s</strong><em> [</em><em>integer</em><em>,</em><em>hide/in,</em><em>]</em></li>
-<li><strong>n</strong><em> [</em><em>integer</em><em>,</em><em>hide/in,</em><em>]</em></li>
 <li><strong>m</strong> (n)<em> [</em><em>integer</em><em>,</em><em>in</em><em>]</em></li>
 <li><strong>l</strong><em> [</em><em>integer</em><em>,</em><em>in</em><em>]</em></li>
 <li><strong>degs</strong> (n_deg)<em> [</em><em>integer</em><em>,</em><em>in</em><em>]</em></li>
-<li><strong>n_deg</strong><em> [</em><em>integer</em><em>,</em><em>hide/in,</em><em>]</em></li>
 <li><strong>x</strong> (n,l)<em> [</em><em>integer</em><em>,</em><em>out</em><em>]</em></li>
 <li><strong>y</strong> (n,l)<em> [</em><em>integer</em><em>,</em><em>out</em><em>]</em></li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Call to:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/fortran_module/multiindices" title="f/fortran_module/multiindices"><code class="xref f f-func docutils literal"><span class="pre">multiindices()</span></code></a></p>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first simple">
+<li><strong>m_sum</strong><em> [</em><em>integer</em><em>,</em><em>hide/in,optional/default=shape(w,0)</em><em>]</em></li>
+<li><strong>n_s</strong><em> [</em><em>integer</em><em>,</em><em>hide/in,optional/default=shape(w,1)</em><em>]</em></li>
+<li><strong>n</strong><em> [</em><em>integer</em><em>,</em><em>hide/in,optional/default=len(m)</em><em>]</em></li>
+<li><strong>n_deg</strong><em> [</em><em>integer</em><em>,</em><em>hide/in,optional/default=len(degs)</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Call to:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/fortran_module/multiindices" title="f/fortran_module/multiindices"><code class="xref f f-func docutils literal notranslate"><span class="pre">multiindices()</span></code></a></p>
 </td>
 </tr>
 </tbody>
@@ -228,19 +242,13 @@ then OpenMP is not installed or not properly configured</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>x</strong> (n_x,l)<em> [</em><em>integer</em><em>,</em><em>in</em><em>]</em></li>
 <li><strong>y</strong> (n_y,l)<em> [</em><em>integer</em><em>,</em><em>in</em><em>]</em></li>
-<li><strong>n_x</strong><em> [</em><em>integer</em><em>,</em><em>hide/in,</em><em>]</em></li>
-<li><strong>n_y</strong><em> [</em><em>integer</em><em>,</em><em>hide/in,</em><em>]</em></li>
 <li><strong>m_x</strong> (n_x)<em> [</em><em>integer</em><em>,</em><em>in</em><em>]</em></li>
 <li><strong>m_y</strong> (n_y)<em> [</em><em>integer</em><em>,</em><em>in</em><em>]</em></li>
 <li><strong>m_y_sum</strong><em> [</em><em>integer</em><em>,</em><em>in</em><em>]</em></li>
-<li><strong>l</strong><em> [</em><em>integer</em><em>,</em><em>hide/in,</em><em>]</em></li>
 <li><strong>degs</strong> (n_deg)<em> [</em><em>integer</em><em>,</em><em>in</em><em>]</em></li>
-<li><strong>n_deg</strong><em> [</em><em>integer</em><em>,</em><em>hide/in,</em><em>]</em></li>
 <li><strong>x_oh_pinv1</strong> (l,x_oh_rank)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
 <li><strong>x_oh_pinv2</strong> (x_oh_rank)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
 <li><strong>x_oh_pinv3</strong> (x_oh_rank,n_s)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
-<li><strong>x_oh_rank</strong><em> [</em><em>integer</em><em>,</em><em>hide/in,</em><em>]</em></li>
-<li><strong>n_s</strong><em> [</em><em>integer</em><em>,</em><em>hide/in,</em><em>]</em></li>
 <li><strong>iters</strong><em> [</em><em>integer</em><em>,</em><em>in</em><em>]</em></li>
 <li><strong>overfit</strong><em> [</em><em>logical</em><em>,</em><em>in</em><em>]</em></li>
 <li><strong>impute</strong><em> [</em><em>logical</em><em>,</em><em>in</em><em>]</em></li>
@@ -250,7 +258,17 @@ then OpenMP is not installed or not properly configured</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Call to:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/fortran_module/discrete_fit_i" title="f/fortran_module/discrete_fit_i"><code class="xref f f-func docutils literal"><span class="pre">discrete_fit_i()</span></code></a></p>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first simple">
+<li><strong>n_x</strong><em> [</em><em>integer</em><em>,</em><em>hide/in,optional/default=shape(x,0)</em><em>]</em></li>
+<li><strong>n_y</strong><em> [</em><em>integer</em><em>,</em><em>hide/in,optional/default=shape(y,0)</em><em>]</em></li>
+<li><strong>l</strong><em> [</em><em>integer</em><em>,</em><em>hide/in,optional/default=shape(x,1)</em><em>]</em></li>
+<li><strong>n_deg</strong><em> [</em><em>integer</em><em>,</em><em>hide/in,optional/default=len(degs)</em><em>]</em></li>
+<li><strong>x_oh_rank</strong><em> [</em><em>integer</em><em>,</em><em>hide/in,optional/default=len(x_oh_pinv2)</em><em>]</em></li>
+<li><strong>n_s</strong><em> [</em><em>integer</em><em>,</em><em>hide/in,optional/default=shape(x_oh_pinv3,1)</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Call to:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/fortran_module/discrete_fit_i" title="f/fortran_module/discrete_fit_i"><code class="xref f f-func docutils literal notranslate"><span class="pre">discrete_fit_i()</span></code></a></p>
 </td>
 </tr>
 </tbody>
@@ -268,15 +286,11 @@ then OpenMP is not installed or not properly configured</p>
 <li><strong>i1</strong><em> [</em><em>integer</em><em>,</em><em>in</em><em>]</em></li>
 <li><strong>i2</strong><em> [</em><em>integer</em><em>,</em><em>in</em><em>]</em></li>
 <li><strong>s</strong> (n_idx,l)<em> [</em><em>integer</em><em>,</em><em>in</em><em>]</em></li>
-<li><strong>n_idx</strong><em> [</em><em>integer</em><em>,</em><em>in,</em><em>]</em></li>
 <li><strong>y</strong> (l)<em> [</em><em>integer</em><em>,</em><em>in</em><em>]</em></li>
 <li><strong>m_y</strong><em> [</em><em>integer</em><em>,</em><em>in</em><em>]</em></li>
-<li><strong>l</strong><em> [</em><em>integer</em><em>,</em><em>in,</em><em>]</em></li>
 <li><strong>x_oh_pinv1</strong> (l,x_oh_rank)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
 <li><strong>x_oh_pinv2</strong> (x_oh_rank)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
 <li><strong>x_oh_pinv3</strong> (x_oh_rank,n_s)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
-<li><strong>x_oh_rank</strong><em> [</em><em>integer</em><em>,</em><em>in,</em><em>]</em></li>
-<li><strong>n_s</strong><em> [</em><em>integer</em><em>,</em><em>in,</em><em>]</em></li>
 <li><strong>iters</strong><em> [</em><em>integer</em><em>,</em><em>in</em><em>]</em></li>
 <li><strong>overfit</strong><em> [</em><em>logical</em><em>,</em><em>in</em><em>]</em></li>
 <li><strong>impute</strong><em> [</em><em>logical</em><em>,</em><em>in</em><em>]</em></li>
@@ -286,7 +300,15 @@ then OpenMP is not installed or not properly configured</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Called from:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/fortran_module/discrete_fit" title="f/fortran_module/discrete_fit"><code class="xref f f-func docutils literal"><span class="pre">discrete_fit()</span></code></a></p>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first simple">
+<li><strong>n_idx</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(s,0)</em><em>]</em></li>
+<li><strong>l</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(s,1)</em><em>]</em></li>
+<li><strong>x_oh_rank</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(x_oh_pinv1,1)</em><em>]</em></li>
+<li><strong>n_s</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(x_oh_pinv3,1)</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Called from:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/fortran_module/discrete_fit" title="f/fortran_module/discrete_fit"><code class="xref f f-func docutils literal notranslate"><span class="pre">discrete_fit()</span></code></a></p>
 </td>
 </tr>
 </tbody>
@@ -303,8 +325,6 @@ then OpenMP is not installed or not properly configured</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>x</strong> (n,l)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
 <li><strong>y</strong> (n,l)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
-<li><strong>n</strong><em> [</em><em>integer</em><em>,</em><em>hide/in,</em><em>]</em></li>
-<li><strong>l</strong><em> [</em><em>integer</em><em>,</em><em>in,</em><em>]</em></li>
 <li><strong>iters</strong><em> [</em><em>integer</em><em>,</em><em>in</em><em>]</em></li>
 <li><strong>atol</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
 <li><strong>rtol</strong><em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
@@ -315,7 +335,13 @@ then OpenMP is not installed or not properly configured</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Call to:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/fortran_module/continuous_fit_i" title="f/fortran_module/continuous_fit_i"><code class="xref f f-func docutils literal"><span class="pre">continuous_fit_i()</span></code></a></p>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first simple">
+<li><strong>n</strong><em> [</em><em>integer</em><em>,</em><em>hide/in,optional/default=shape(x,0)</em><em>]</em></li>
+<li><strong>l</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(x,1)</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Call to:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/fortran_module/continuous_fit_i" title="f/fortran_module/continuous_fit_i"><code class="xref f f-func docutils literal notranslate"><span class="pre">continuous_fit_i()</span></code></a></p>
 </td>
 </tr>
 </tbody>
@@ -332,8 +358,6 @@ then OpenMP is not installed or not properly configured</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>i</strong><em> [</em><em>integer</em><em>,</em><em>in</em><em>]</em></li>
 <li><strong>x</strong> (n,l)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
-<li><strong>n</strong><em> [</em><em>integer</em><em>,</em><em>in,</em><em>]</em></li>
-<li><strong>l</strong><em> [</em><em>integer</em><em>,</em><em>in,</em><em>]</em></li>
 <li><strong>x_mean0</strong> (n,l)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
 <li><strong>symx</strong> (l)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
 <li><strong>cov_x</strong> (n,n)<em> [</em><em>real</em><em>,</em><em>in</em><em>]</em></li>
@@ -348,7 +372,13 @@ then OpenMP is not installed or not properly configured</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Called from:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/fortran_module/continuous_fit" title="f/fortran_module/continuous_fit"><code class="xref f f-func docutils literal"><span class="pre">continuous_fit()</span></code></a></p>
+<tr class="field-even field"><th class="field-name">Options:</th><td class="field-body"><ul class="first simple">
+<li><strong>n</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(x,0)</em><em>]</em></li>
+<li><strong>l</strong><em> [</em><em>integer</em><em>,</em><em>in,optional/default=shape(x,1)</em><em>]</em></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Called from:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#f/fortran_module/continuous_fit" title="f/fortran_module/continuous_fit"><code class="xref f f-func docutils literal notranslate"><span class="pre">continuous_fit()</span></code></a></p>
 </td>
 </tr>
 </tbody>
@@ -378,7 +408,7 @@ then OpenMP is not installed or not properly configured</p>
         &copy; Copyright 2018, Joe McKenna.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.7.9.
       </li>
     </ul>
     </div>

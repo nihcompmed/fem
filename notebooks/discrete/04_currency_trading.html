@@ -96,12 +96,14 @@
                         title="next chapter">Simulated time series</a></p>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -285,20 +287,20 @@ differ only in the degree of the underlying model. We present an example
 in which the higher degree model outperforms the lower degree model.</p>
 <p>We start by loading the necessary modules and functions.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2"><div class="highlight"><pre>
-<span></span><span class="o">%</span><span class="k">matplotlib</span> inline
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">matplotlib.dates</span> <span class="kn">as</span> <span class="nn">mdates</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">fem</span><span class="o">,</span> <span class="nn">time</span>
-<span class="n">data_dir</span> <span class="o">=</span> <span class="s1">&#39;../../../data/currency&#39;</span>
-<span class="n">cache</span> <span class="o">=</span> <span class="bp">True</span>
-<span class="k">print</span> <span class="s1">&#39;number of processors: </span><span class="si">%i</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fem</span><span class="o">.</span><span class="n">fortran_module</span><span class="o">.</span><span class="n">fortran_module</span><span class="o">.</span><span class="n">num_threads</span><span class="p">(),)</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span>%matplotlib inline
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+import numpy as np
+import pandas as pd
+import os, fem, time
+data_dir = &#39;../../../data/currency&#39;
+cache = True
+print &#39;number of processors: %i&#39; % (fem.fortran_module.fortran_module.num_threads(),)
 </pre></div>
 </div>
 </div>
@@ -311,37 +313,37 @@ number of processors: 8
 </pre></div></div>
 </div>
 <p>We use data of the currency exchange rates relative to the Euro from
-2000 to 2018 for <span class="math">\(n=11\)</span> currencies (USD, CAD, MXN, GBP, NOK, CHF,
+2000 to 2018 for <span class="math notranslate nohighlight">\(n=11\)</span> currencies (USD, CAD, MXN, GBP, NOK, CHF,
 SEK, AUD, JPY, KRW, and SGD) plotted below.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2"><div class="highlight"><pre>
-<span></span><span class="c1"># load data</span>
-<span class="n">currency</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="s1">&#39;currency.csv&#39;</span><span class="p">),</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">currency</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">T</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span># load data
+currency = pd.read_csv(os.path.join(data_dir, &#39;currency.csv&#39;), index_col=0)
+x = currency.values.T
 
-<span class="c1"># plot data</span>
-<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
-<span class="n">date2num</span> <span class="o">=</span> <span class="n">mdates</span><span class="o">.</span><span class="n">strpdate2num</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
-<span class="n">dates</span> <span class="o">=</span> <span class="p">[</span><span class="n">date2num</span><span class="p">(</span><span class="n">date</span><span class="p">)</span> <span class="k">for</span> <span class="n">date</span> <span class="ow">in</span> <span class="n">currency</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
-<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">xi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">plot_date</span><span class="p">(</span><span class="n">dates</span><span class="p">,</span> <span class="n">xi</span><span class="p">,</span> <span class="s1">&#39;k-&#39;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">currency</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+# plot data
+fig, ax = plt.subplots(x.shape[0], 1, figsize=(16,4))
+date2num = mdates.strpdate2num(fmt=&#39;%Y-%m-%d&#39;)
+dates = [date2num(date) for date in currency.index]
+for i, xi in enumerate(x):
+    ax[i].plot_date(dates, xi, &#39;k-&#39;)
+    ax[i].set_ylabel(currency.columns[i], rotation=0, ha=&#39;right&#39;)
+    ax[i].set_yticks([])
 
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">spine</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="s1">&#39;bottom&#39;</span><span class="p">]:</span>
-        <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="n">spine</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">spine</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="s1">&#39;top&#39;</span><span class="p">]:</span>
-    <span class="n">ax</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="n">spine</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">YearLocator</span><span class="p">())</span>
-<span class="n">ax</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">DateFormatter</span><span class="p">(</span><span class="s1">&#39;%Y&#39;</span><span class="p">))</span>
-<span class="n">ax</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_minor_locator</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">MonthLocator</span><span class="p">())</span>
-<span class="n">fig</span><span class="o">.</span><span class="n">autofmt_xdate</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+for i in range(x.shape[0]-1):
+    for spine in [&#39;left&#39;, &#39;right&#39;, &#39;top&#39;, &#39;bottom&#39;]:
+        ax[i].spines[spine].set_visible(False)
+for spine in [&#39;left&#39;, &#39;right&#39;, &#39;top&#39;]:
+    ax[-1].spines[spine].set_visible(False)
+ax[-1].xaxis.set_major_locator(mdates.YearLocator())
+ax[-1].xaxis.set_major_formatter(mdates.DateFormatter(&#39;%Y&#39;))
+ax[-1].xaxis.set_minor_locator(mdates.MonthLocator())
+fig.autofmt_xdate()
+plt.show()
 </pre></div>
 </div>
 </div>
@@ -353,43 +355,43 @@ SEK, AUD, JPY, KRW, and SGD) plotted below.</p>
 </div>
 </div>
 <p>We discretize each currency exchange rate sequence
-<span class="math">\(\{x_i(t)\}_{t=t_1}^{t_{\ell}}\)</span>, where
-<span class="math">\(\Delta t=t_{k+1}-t_k=1\)</span> day, by recording the sign of the daily
-movement <span class="math">\(\{s_i(t))\}_{t=t_2}^{t_{\ell}}\)</span> with stagnation settled
+<span class="math notranslate nohighlight">\(\{x_i(t)\}_{t=t_1}^{t_{\ell}}\)</span>, where
+<span class="math notranslate nohighlight">\(\Delta t=t_{k+1}-t_k=1\)</span> day, by recording the sign of the daily
+movement <span class="math notranslate nohighlight">\(\{s_i(t))\}_{t=t_2}^{t_{\ell}}\)</span> with stagnation settled
 by the sign of the mean change:</p>
-<div class="math">
+<div class="math notranslate nohighlight">
 \[\begin{split}s_i(t_{k+1}) = \begin{cases}1&amp;\text{ if }x_i(t_{k+1})-x_i(t_k)&gt;0\\-1&amp;\text{ if }x_i(t_{k+1})-x_i(t_k)&lt;0\\\text{sign}\left({1\over\ell-1}\sum_{k=1}^{\ell-1}(x_i(t_{k+1})-x_i(t_k))\right)&amp;\text{ if }x_i(t_{k+1})-x_i(t_k)=0 \end{cases}.\end{split}\]</div>
 <p>The first 200 fluctuations for each currency are plotted below.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2"><div class="highlight"><pre>
-<span></span><span class="c1"># daily movement</span>
-<span class="n">dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="c1"># sign of daily movement</span>
-<span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">dx</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">si</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
-    <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">si</span><span class="o">==</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">dx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span># daily movement
+dx = np.diff(x, axis=1)
+# sign of daily movement
+s = np.sign(dx).astype(int)
+for i, si in enumerate(s):
+    s[i][si==0] = np.sign(dx[i].mean())
 
-<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+fig, ax = plt.subplots(s.shape[0], 1, figsize=(16,4))
 
-<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">si</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
-    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">plot_date</span><span class="p">(</span><span class="n">dates</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">201</span><span class="p">],</span> <span class="n">si</span><span class="p">[:</span><span class="mi">200</span><span class="p">],</span> <span class="s1">&#39;k-&#39;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">currency</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+for i, si in enumerate(s):
+    ax[i].plot_date(dates[1:201], si[:200], &#39;k-&#39;)
+    ax[i].set_ylabel(currency.columns[i], rotation=0, ha=&#39;right&#39;)
+    ax[i].set_yticks([])
 
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">spine</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="s1">&#39;bottom&#39;</span><span class="p">]:</span>
-        <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="n">spine</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">spine</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="s1">&#39;top&#39;</span><span class="p">]:</span>
-    <span class="n">ax</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="n">spine</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">MonthLocator</span><span class="p">())</span>
-<span class="n">ax</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">DateFormatter</span><span class="p">(</span><span class="s1">&#39;%B %Y&#39;</span><span class="p">))</span>
-<span class="n">ax</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_minor_locator</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">DayLocator</span><span class="p">())</span>
-<span class="n">fig</span><span class="o">.</span><span class="n">autofmt_xdate</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+for i in range(s.shape[0]-1):
+    for spine in [&#39;left&#39;, &#39;right&#39;, &#39;top&#39;, &#39;bottom&#39;]:
+        ax[i].spines[spine].set_visible(False)
+for spine in [&#39;left&#39;, &#39;right&#39;, &#39;top&#39;]:
+    ax[-1].spines[spine].set_visible(False)
+ax[-1].xaxis.set_major_locator(mdates.MonthLocator())
+ax[-1].xaxis.set_major_formatter(mdates.DateFormatter(&#39;%B %Y&#39;))
+ax[-1].xaxis.set_minor_locator(mdates.DayLocator())
+fig.autofmt_xdate()
+plt.show()
 </pre></div>
 </div>
 </div>
@@ -401,58 +403,58 @@ by the sign of the mean change:</p>
 </div>
 </div>
 <p>We fit two different models to the one-hot encodings of the binary data
-<span class="math">\(\{s_i(t)\}_{t=t_2}^{t_{\ell}}\)</span>. The one-hot encoding of
-<span class="math">\(s(t_k)=(s_1(t_k),\ldots,s_{n}(t_k))^T\in\{-1,1\}^n\)</span> is a binary
+<span class="math notranslate nohighlight">\(\{s_i(t)\}_{t=t_2}^{t_{\ell}}\)</span>. The one-hot encoding of
+<span class="math notranslate nohighlight">\(s(t_k)=(s_1(t_k),\ldots,s_{n}(t_k))^T\in\{-1,1\}^n\)</span> is a binary
 vector
-<span class="math">\(\sigma(t_k)=(\sigma_1(t_k),\ldots,\sigma_n(t_k))^T\in\{0,1\}^{2n}\)</span>
-where <span class="math">\(\sigma_i(t_k)=(1,0)^T\)</span> if <span class="math">\(s_i(t_k)=1\)</span> and
-<span class="math">\(\sigma_i(t_k)=(0,1)^T\)</span> if <span class="math">\(s_i(t_k)=-1\)</span>. In either model,
-the probability that <span class="math">\(x_i\)</span> increases from <span class="math">\(t_k\)</span> to
-<span class="math">\(t_{k+1}\)</span> is assumed to be</p>
-<div class="math">
+<span class="math notranslate nohighlight">\(\sigma(t_k)=(\sigma_1(t_k),\ldots,\sigma_n(t_k))^T\in\{0,1\}^{2n}\)</span>
+where <span class="math notranslate nohighlight">\(\sigma_i(t_k)=(1,0)^T\)</span> if <span class="math notranslate nohighlight">\(s_i(t_k)=1\)</span> and
+<span class="math notranslate nohighlight">\(\sigma_i(t_k)=(0,1)^T\)</span> if <span class="math notranslate nohighlight">\(s_i(t_k)=-1\)</span>. In either model,
+the probability that <span class="math notranslate nohighlight">\(x_i\)</span> increases from <span class="math notranslate nohighlight">\(t_k\)</span> to
+<span class="math notranslate nohighlight">\(t_{k+1}\)</span> is assumed to be</p>
+<div class="math notranslate nohighlight">
 \[p(s_i(t_{k+1})~|~s(t_k)) = {\exp e_{2i}^T h(\sigma(t_k))\over\sum_{i=1}^n\exp e_{2i}^Th(\sigma(t_k))}.\]</div>
-<p>The two models differ in their definition of <span class="math">\(h\)</span>; in the first
-model, <span class="math">\(h(\sigma(t_k)) = W_1\sigma(t_k)\)</span>, but in the second model,
-<span class="math">\(h(\sigma(t_k)) = W_1\sigma(t_k) + W_2\sigma^2(t_k)\)</span>. The
-quadratic term <span class="math">\(\sigma^2\)</span> consists of distinct nonzero products of
-the form <span class="math">\(\sigma_{j_2}\sigma_{j_1}\)</span>, <span class="math">\(1\leq j_1, j_2\leq 2n\)</span>
+<p>The two models differ in their definition of <span class="math notranslate nohighlight">\(h\)</span>; in the first
+model, <span class="math notranslate nohighlight">\(h(\sigma(t_k)) = W_1\sigma(t_k)\)</span>, but in the second model,
+<span class="math notranslate nohighlight">\(h(\sigma(t_k)) = W_1\sigma(t_k) + W_2\sigma^2(t_k)\)</span>. The
+quadratic term <span class="math notranslate nohighlight">\(\sigma^2\)</span> consists of distinct nonzero products of
+the form <span class="math notranslate nohighlight">\(\sigma_{j_2}\sigma_{j_1}\)</span>, <span class="math notranslate nohighlight">\(1\leq j_1, j_2\leq 2n\)</span>
 (see <a class="reference external" href="../../discrete.html">FEM for discrete data</a> for more
-information on degrees of <span class="math">\(\sigma\)</span>).</p>
-<p>For demonstration, we instantiate two models, one with <code class="docutils literal"><span class="pre">degs=[1]</span></code> and
-one with <code class="docutils literal"><span class="pre">degs=[1,2]</span></code>, and fit them to the whole currency data set. We
+information on degrees of <span class="math notranslate nohighlight">\(\sigma\)</span>).</p>
+<p>For demonstration, we instantiate two models, one with <code class="docutils literal notranslate"><span class="pre">degs=[1]</span></code> and
+one with <code class="docutils literal notranslate"><span class="pre">degs=[1,2]</span></code>, and fit them to the whole currency data set. We
 plot the heat maps of the fitted model parameters and the running
 discrepancies during the fit for both models below.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2"><div class="highlight"><pre>
-<span></span><span class="c1"># create two models</span>
-<span class="n">models</span> <span class="o">=</span> <span class="p">[</span><span class="n">fem</span><span class="o">.</span><span class="n">discrete</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">degs</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">fem</span><span class="o">.</span><span class="n">discrete</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">degs</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])]</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span># create two models
+models = [fem.discrete.model(degs=[1]), fem.discrete.model(degs=[1, 2])]
 
-<span class="c1"># fit model to whole currency data set</span>
-<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">model</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">models</span><span class="p">):</span>
-    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">s</span><span class="p">[:,:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:],</span> <span class="n">overfit</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-    <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="k">print</span> <span class="s1">&#39;model </span><span class="si">%i</span><span class="s1"> fit time: </span><span class="si">%.02f</span><span class="s1"> seconds&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">end</span><span class="o">-</span><span class="n">start</span><span class="p">)</span>
+# fit model to whole currency data set
+for i, model in enumerate(models):
+    start = time.time()
+    model.fit(s[:,:-1], s[:, 1:], overfit=False)
+    end = time.time()
+    print &#39;model %i fit time: %.02f seconds&#39; % (i+1, end-start)
 
-<span class="c1"># plot model parameter heat maps and running discrepancies</span>
-<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
-<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">model</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">models</span><span class="p">):</span>
-    <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">w</span><span class="o">.</span><span class="n">itervalues</span><span class="p">())</span>
-    <span class="n">scale</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">w</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-    <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">matshow</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;seismic&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="n">scale</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_ticks_position</span><span class="p">(</span><span class="s1">&#39;bottom&#39;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">disc</span><span class="p">:</span>
-        <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)),</span> <span class="n">d</span><span class="p">,</span> <span class="s1">&#39;k-&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
-    <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;iteration&#39;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;discrepancy&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;model 1 $W_1$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;model 2 $[W_1, W_2]$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+# plot model parameter heat maps and running discrepancies
+fig, ax = plt.subplots(1, 4, figsize=(12, 3))
+for i, model in enumerate(models):
+    w = np.hstack(model.w.itervalues())
+    scale = np.abs(w).max()
+    ax[2*i].matshow(w, cmap=&#39;seismic&#39;, vmin=-scale, vmax=scale, aspect=&#39;auto&#39;)
+    ax[2*i].xaxis.set_ticks_position(&#39;bottom&#39;)
+    for d in model.disc:
+        ax[2*i+1].plot(1 + np.arange(len(d)), d, &#39;k-&#39;, lw=0.1)
+    ax[2*i+1].set_xlabel(&#39;iteration&#39;)
+    ax[2*i+1].set_ylabel(&#39;discrepancy&#39;)
+ax[0].set_title(&#39;model 1 $W_1$&#39;, fontsize=14)
+ax[2].set_title(&#39;model 2 $[W_1, W_2]$&#39;, fontsize=14)
+plt.tight_layout()
+plt.show()
 </pre></div>
 </div>
 </div>
@@ -473,103 +475,103 @@ model 2 fit time: 0.36 seconds
 </div>
 </div>
 <p>Next, we devise two simple trading strategies that train the models on a
-moving time window then predict <span class="math">\(s\)</span> one day ahead of the window.
+moving time window then predict <span class="math notranslate nohighlight">\(s\)</span> one day ahead of the window.
 We keep track of our account balances and prediction accuracies in the
-<code class="docutils literal"><span class="pre">acccount</span></code> and <code class="docutils literal"><span class="pre">accuracy</span></code> variables. The trading strategies work as
-follows. The models are trained on the data in the time window <span class="math">\([\)</span>
-<code class="docutils literal"><span class="pre">t1</span></code> <span class="math">\(,\)</span> <code class="docutils literal"><span class="pre">t1</span></code> <span class="math">\(+\)</span> <code class="docutils literal"><span class="pre">tw</span></code> <span class="math">\(-1]\)</span> to predict
-<span class="math">\(s(\)</span> <code class="docutils literal"><span class="pre">t1+tw</span></code> <span class="math">\()\)</span>. Initially, <code class="docutils literal"><span class="pre">t1</span></code> <span class="math">\(=\)</span> <code class="docutils literal"><span class="pre">t0</span></code>, the
-initial time of the data set, and <code class="docutils literal"><span class="pre">t1</span></code> is incremented by 1 while
-<code class="docutils literal"><span class="pre">t1+tw</span></code> is less than <code class="docutils literal"><span class="pre">tn</span></code>, the final time of the data set. On each
-day, we pass the data at <code class="docutils literal"><span class="pre">t1</span></code> <span class="math">\(+\)</span> <code class="docutils literal"><span class="pre">tw</span></code> to <code class="docutils literal"><span class="pre">model.predict</span></code>,
+<code class="docutils literal notranslate"><span class="pre">acccount</span></code> and <code class="docutils literal notranslate"><span class="pre">accuracy</span></code> variables. The trading strategies work as
+follows. The models are trained on the data in the time window <span class="math notranslate nohighlight">\([\)</span>
+<code class="docutils literal notranslate"><span class="pre">t1</span></code> <span class="math notranslate nohighlight">\(,\)</span> <code class="docutils literal notranslate"><span class="pre">t1</span></code> <span class="math notranslate nohighlight">\(+\)</span> <code class="docutils literal notranslate"><span class="pre">tw</span></code> <span class="math notranslate nohighlight">\(-1]\)</span> to predict
+<span class="math notranslate nohighlight">\(s(\)</span> <code class="docutils literal notranslate"><span class="pre">t1+tw</span></code> <span class="math notranslate nohighlight">\()\)</span>. Initially, <code class="docutils literal notranslate"><span class="pre">t1</span></code> <span class="math notranslate nohighlight">\(=\)</span> <code class="docutils literal notranslate"><span class="pre">t0</span></code>, the
+initial time of the data set, and <code class="docutils literal notranslate"><span class="pre">t1</span></code> is incremented by 1 while
+<code class="docutils literal notranslate"><span class="pre">t1+tw</span></code> is less than <code class="docutils literal notranslate"><span class="pre">tn</span></code>, the final time of the data set. On each
+day, we pass the data at <code class="docutils literal notranslate"><span class="pre">t1</span></code> <span class="math notranslate nohighlight">\(+\)</span> <code class="docutils literal notranslate"><span class="pre">tw</span></code> to <code class="docutils literal notranslate"><span class="pre">model.predict</span></code>,
 which returns a prediction, 1 or -1, and probability greater than 0.5 of
 the price movement tomorrow. We select to trade only those currencies
-whose probabilities are greater than <code class="docutils literal"><span class="pre">threshold</span></code>, and we invest our
+whose probabilities are greater than <code class="docutils literal notranslate"><span class="pre">threshold</span></code>, and we invest our
 whole account value weighted in the chosen currencies according the
-probabilities leveraged by a constant factor <code class="docutils literal"><span class="pre">leverage</span></code>. The models
-are retrained every <code class="docutils literal"><span class="pre">dt</span></code> days.</p>
+probabilities leveraged by a constant factor <code class="docutils literal notranslate"><span class="pre">leverage</span></code>. The models
+are retrained every <code class="docutils literal notranslate"><span class="pre">dt</span></code> days.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2"><div class="highlight"><pre>
-<span></span><span class="n">account_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="s1">&#39;account.npy&#39;</span><span class="p">)</span>
-<span class="n">accuracy_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="s1">&#39;accuracy.npy&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span>account_file = os.path.join(data_dir, &#39;account.npy&#39;)
+accuracy_file = os.path.join(data_dir, &#39;accuracy.npy&#39;)
 
-<span class="k">if</span> <span class="n">cache</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">account_file</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">accuracy_file</span><span class="p">):</span>
-    <span class="n">account</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">account_file</span><span class="p">)</span>
-    <span class="n">accuracy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">accuracy_file</span><span class="p">)</span>
+if cache and os.path.exists(account_file) and os.path.exists(accuracy_file):
+    account = np.load(account_file)
+    accuracy = np.load(accuracy_file)
 
-<span class="k">else</span><span class="p">:</span>
-    <span class="c1"># t0, tn: initial and final time</span>
-    <span class="n">t0</span><span class="p">,</span> <span class="n">tn</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+else:
+    # t0, tn: initial and final time
+    t0, tn = 0, s.shape[1]
 
-    <span class="c1"># daily balance</span>
-    <span class="n">account</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="n">tn</span><span class="p">))</span>
-    <span class="c1"># daily prediction accuracy</span>
-    <span class="n">accuracy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="n">tn</span><span class="p">))</span>
+    # daily balance
+    account = np.ones((2, tn))
+    # daily prediction accuracy
+    accuracy = np.zeros((2, tn))
 
-    <span class="c1"># tw: training time window width</span>
-    <span class="c1"># dt: retraining period</span>
-    <span class="n">tw</span><span class="p">,</span> <span class="n">dt</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">1</span>
-    <span class="c1"># t1, t2: limits of moving training window</span>
-    <span class="n">t1</span><span class="p">,</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">t0</span><span class="p">,</span> <span class="n">t0</span><span class="o">+</span><span class="n">tw</span>
+    # tw: training time window width
+    # dt: retraining period
+    tw, dt = 200, 1
+    # t1, t2: limits of moving training window
+    t1, t2 = t0, t0+tw
 
-    <span class="c1"># maximum position weight</span>
-    <span class="n">max_weight</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mf">3.0</span>
-    <span class="c1"># trade if probability above threshold</span>
-    <span class="n">threshold</span> <span class="o">=</span> <span class="mf">0.75</span>
-    <span class="c1"># percentage of account to bid</span>
-    <span class="n">leverage</span> <span class="o">=</span> <span class="mf">1.0</span>
+    # maximum position weight
+    max_weight = 1.0 / 3.0
+    # trade if probability above threshold
+    threshold = 0.75
+    # percentage of account to bid
+    leverage = 1.0
 
-    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="k">while</span> <span class="n">t2</span> <span class="o">&lt;</span> <span class="n">tn</span><span class="p">:</span>
+    start = time.time()
+    while t2 &lt; tn:
 
-        <span class="c1"># todays price</span>
-        <span class="n">price</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:,</span> <span class="n">t2</span><span class="p">]</span>
-        <span class="c1"># tomorrows change</span>
-        <span class="n">realized_s</span> <span class="o">=</span> <span class="n">s</span><span class="p">[:,</span> <span class="n">t2</span><span class="p">]</span>
-        <span class="n">realized_dx</span> <span class="o">=</span> <span class="n">dx</span><span class="p">[:,</span> <span class="n">t2</span><span class="p">]</span>
-        <span class="n">percent_change</span> <span class="o">=</span> <span class="n">realized_dx</span> <span class="o">/</span> <span class="n">price</span>
+        # todays price
+        price = x[:, t2]
+        # tomorrows change
+        realized_s = s[:, t2]
+        realized_dx = dx[:, t2]
+        percent_change = realized_dx / price
 
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">model</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">models</span><span class="p">):</span>
+        for i, model in enumerate(models):
 
-            <span class="c1"># start todays account with yesterdays balance</span>
-            <span class="n">account</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">t2</span><span class="p">]</span> <span class="o">=</span> <span class="n">account</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">t2</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            # start todays account with yesterdays balance
+            account[i, t2] = account[i, t2-1]
 
-            <span class="c1"># retrain the model</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">t1</span><span class="o">-</span><span class="n">t0</span><span class="p">)</span> <span class="o">%</span> <span class="n">dt</span><span class="p">:</span>
-                <span class="n">s_train</span> <span class="o">=</span> <span class="n">s</span><span class="p">[:,</span><span class="n">t1</span><span class="p">:</span><span class="n">t2</span><span class="p">]</span>
-                <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">s_train</span><span class="p">[:,:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">s_train</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:],</span> <span class="n">overfit</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+            # retrain the model
+            if not (t1-t0) % dt:
+                s_train = s[:,t1:t2]
+                model.fit(s_train[:,:-1], s_train[:, 1:], overfit=False)
 
-            <span class="c1"># predict which currencies will increase</span>
-            <span class="n">prediction</span><span class="p">,</span> <span class="n">probability</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">s_train</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            # predict which currencies will increase
+            prediction, probability = model.predict(s_train[:, -1])
 
-            <span class="c1"># trade if probability above threshold</span>
-            <span class="n">portfolio</span> <span class="o">=</span> <span class="n">probability</span> <span class="o">&gt;</span> <span class="n">threshold</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">portfolio</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-                <span class="k">continue</span>
+            # trade if probability above threshold
+            portfolio = probability &gt; threshold
+            if not portfolio.any():
+                continue
 
-            <span class="c1"># position weights proportional to probability of prediction</span>
-            <span class="n">weights</span> <span class="o">=</span> <span class="p">(</span><span class="n">prediction</span> <span class="o">*</span> <span class="n">probability</span><span class="p">)[</span><span class="n">portfolio</span><span class="p">]</span>
-            <span class="n">weights</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-            <span class="n">weights</span><span class="p">[</span><span class="n">weights</span> <span class="o">&gt;</span> <span class="n">max_weight</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_weight</span>
+            # position weights proportional to probability of prediction
+            weights = (prediction * probability)[portfolio]
+            weights /= np.abs(weights).sum()
+            weights[weights &gt; max_weight] = max_weight
 
-            <span class="c1"># take trading positions</span>
-            <span class="n">position</span> <span class="o">=</span> <span class="n">leverage</span> <span class="o">*</span> <span class="n">account</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">t2</span><span class="p">]</span> <span class="o">*</span> <span class="n">weights</span>
+            # take trading positions
+            position = leverage * account[i,t2] * weights
 
-            <span class="c1"># calculuate returns and accuracy</span>
-            <span class="n">account</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">t2</span><span class="p">]</span> <span class="o">+=</span> <span class="p">(</span><span class="n">position</span> <span class="o">*</span> <span class="n">percent_change</span><span class="p">[</span><span class="n">portfolio</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-            <span class="n">accuracy</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">t2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">prediction</span> <span class="o">==</span> <span class="n">realized_s</span><span class="p">)[</span><span class="n">portfolio</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+            # calculuate returns and accuracy
+            account[i, t2] += (position * percent_change[portfolio]).sum()
+            accuracy[i, t2] = (prediction == realized_s)[portfolio].mean()
 
-        <span class="n">t1</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="n">t2</span> <span class="o">+=</span> <span class="mi">1</span>
+        t1 += 1
+        t2 += 1
 
-    <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="k">print</span> <span class="s1">&#39;backtest time: </span><span class="si">%.02f</span><span class="s1"> minutes&#39;</span> <span class="o">%</span> <span class="p">((</span><span class="n">end</span><span class="o">-</span><span class="n">start</span><span class="p">)</span><span class="o">/</span><span class="mf">60.</span><span class="p">,)</span>
-    <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">account_file</span><span class="p">,</span> <span class="n">account</span><span class="p">)</span>
-    <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">accuracy_file</span><span class="p">,</span> <span class="n">accuracy</span><span class="p">)</span>
+    end = time.time()
+    print &#39;backtest time: %.02f minutes&#39; % ((end-start)/60.,)
+    np.save(account_file, account)
+    np.save(accuracy_file, accuracy)
 </pre></div>
 </div>
 </div>
@@ -577,22 +579,22 @@ are retrained every <code class="docutils literal"><span class="pre">dt</span></
 balance and rolling mean of the prediction accuracy. The model with the
 quadratic term performed better in by return and prediction accuracy.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none"><div class="highlight"><pre>
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2"><div class="highlight"><pre>
-<span></span><span class="n">accuracy_rolling_mean</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">accuracy</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">T</span>
-<span class="k">print</span> <span class="s1">&#39;accuracy: model 1: </span><span class="si">%.02f</span><span class="s1">, model 2: </span><span class="si">%.02f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">accuracy</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">accuracy</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span>accuracy_rolling_mean = pd.DataFrame(accuracy.T).rolling(100).mean().values.T
+print &#39;accuracy: model 1: %.02f, model 2: %.02f&#39; % (accuracy[0].mean(), accuracy[1].mean())
 
-<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot_date</span><span class="p">(</span><span class="n">dates</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">account</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;k-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot_date</span><span class="p">(</span><span class="n">dates</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">account</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;r-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;quadratic&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot_date</span><span class="p">(</span><span class="n">dates</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">accuracy_rolling_mean</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;k-&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot_date</span><span class="p">(</span><span class="n">dates</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">accuracy_rolling_mean</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;r-&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;account </span><span class="si">% c</span><span class="s1">hange&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;accuracy&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+fig, ax = plt.subplots(2, 1, figsize=(14, 5))
+ax[0].plot_date(dates[1:], account[0], &#39;k-&#39;, label=&#39;linear&#39;)
+ax[0].plot_date(dates[1:], account[1], &#39;r-&#39;, label=&#39;quadratic&#39;)
+ax[1].plot_date(dates[1:], accuracy_rolling_mean[0], &#39;k-&#39;)
+ax[1].plot_date(dates[1:], accuracy_rolling_mean[1], &#39;r-&#39;)
+ax[0].set_ylabel(&#39;account % change&#39;)
+ax[1].set_ylabel(&#39;accuracy&#39;)
+plt.show()
 </pre></div>
 </div>
 </div>
@@ -634,7 +636,7 @@ accuracy: model 1: 0.18, model 2: 0.47
         &copy; Copyright 2018, Joe McKenna.
       </li>
       <li>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.5.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.7.9.
       </li>
     </ul>
     </div>
