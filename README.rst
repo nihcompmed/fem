@@ -1,4 +1,4 @@
-Free Energy Minimization
+Expectation Reflection/Free Energy Minimization
 ========================
 
 Quick Start
